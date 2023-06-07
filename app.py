@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -33,6 +33,11 @@ def after_request(response):
     return response
 
 
+@app.route("/pdf/<path:filename>")
+def serve_pdf(filename):
+    return send_from_directory("static", filename)
+
+
 @app.route("/")
 def index():
     return redirect(url_for("login"))
@@ -58,7 +63,7 @@ def login():
                 error = "All fields must be filled"
             else:
                 check_login = db.execute(
-                    "SELECT * FROM db WHERE email=?", email)
+                    "SELECT * FROM logins WHERE email=?", email)
                 returned_login = list(check_login)
 
                 if not len(returned_login):
@@ -78,26 +83,20 @@ def login():
             if not uname or not email or not password:
                 error = "All fields must be filled"
 
-            user_count = db.execute("SELECT COUNT(*) FROM db")
+            user_count = db.execute("SELECT COUNT(*) FROM logins")
             is_username_taken = db.execute(
-                "SELECT username FROM db WHERE username=?", uname)
+                "SELECT username FROM logins WHERE username=?", uname)
             is_email_taken = db.execute(
-                "SELECT email FROM db WHERE email=?", email)
+                "SELECT email FROM logins WHERE email=?", email)
 
             if len(is_username_taken):
                 error = "Username already taken"
             elif len(is_email_taken):
                 error = "Email already registered"
             else:
-                id_num = 0
-                int_user_count = user_count[0]['COUNT(*)']
-                id_num = int_user_count
-
-                db.execute("INSERT INTO db (id, username, email, password) VALUES (?, ?, ?, ?)",
-                           id_num, uname, email, password)
-                db.execute(
-                    "INSERT INTO profile_info (profile_img_id, user_id) VALUES (?, ?)", 1, id_num)
-    return render_template("landing.html", error=error)
+                db.execute("INSERT INTO logins (username, email, password) VALUES (?, ?, ?)",
+                           uname, email, password)
+    return render_template("index.html", error=error)
 
 
 @app.route("/home", methods=["POST", "GET"])
