@@ -6,126 +6,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Track and cateogrize your personal finances using our cross-platform personal finance app! Reimagine the way you assess your spending habits and improve your budgeting skills. Our app also features secure credit card linking to automatically log and monitor all purchases made with your card."
+      content="Monitor personal expenses and generate easy-to-digest reports on your personal finances. Make calculating your taxes easier and take control of your spending."
     />
     <title>Login - Spend It Smart</title>
     <link href="/static/images/spenditsmartlogo.PNG" rel="icon" />
     <link href="/static/css/login-styles.css" rel="stylesheet" />
   </head>
   <body>
-    <h1>Welcome to Spend It Smart!</h1>
-    <div class="wrapper">
-      <div class="form-box login">
-        <h2>Login</h2>
-        {% if error %}
-        <p class="error"><strong></strong> {{ error }} {% endif %}</p>
-        <!-- login form -->
-        <form method="post" action="{{ url_for('login') }}">
-          <!-- email input -->
-          <div class="input-box">
-            <span class="icon">
-              <ion-icon name="mail"></ion-icon>
-            </span>
-            <input
-              type="email"
-              name="em"
-              autocomplete="off"
-              placeholder="Email"
-              required
-            />
-          </div>
-
-          <!-- password input -->
-          <div class="input-box">
-            <span class="icon">
-              <ion-icon name="lock-closed"></ion-icon>
-            </span>
-            <input type="password" name="pw" placeholder="Password" required />
-          </div>
-          <!-- remember me + forgot password field -->
-          <div class="remember-forgot">
-            <label> <input type="checkbox" />Remember me </label>
-            <a href="#">Forgot Password?</a>
-          </div>
-          <!-- login button -->
-          <button type="submit" class="btn" name="loginbutton" value="login">
-            Login
-          </button>
-          <!-- register an account field -->
-          <div class="login-register">
-            <p>
-              Don't have an account?
-              <a href="#" class="register-link">Register</a>
-            </p>
-          </div>
-        </form>
+    <div class="container">
+      <div>
+        <img
+          src="/static/images/spenditsmartlogo.PNG"
+          class="logo"
+          alt="logo"
+        />
       </div>
-      <!-- registration form -->
-      <div class="form-box register">
-        <h2>Register</h2>
-        <form method="post" action="{{ url_for('login') }}">
-          <!-- username field -->
-          <div class="input-box">
-            <span class="icon">
-              <ion-icon name="person"></ion-icon>
-            </span>
-            <input
-              type="text"
-              name="uname-reg"
-              autocomplete="off"
-              placeholder="Username"
-              required
-            />
-          </div>
-          <!-- email field -->
-          <div class="input-box">
-            <span class="icon">
-              <ion-icon name="mail"></ion-icon>
-            </span>
-            <input
-              type="email"
-              name="email-reg"
-              autocomplete="off"
-              placeholder="E-mail"
-              required
-            />
-          </div>
-          <!-- password field -->
-          <div class="input-box">
-            <span class="icon">
-              <ion-icon name="lock-closed"></ion-icon>
-            </span>
-            <input
-              type="password"
-              name="pw-reg"
-              placeholder="Password"
-              required
-            />
-          </div>
-          <!-- agree to TCs -->
-          <div class="remember-forgot">
-            <label>
-              <input type="checkbox" />I agree to SpendItSmart's
-              <a href="spenditsmart_tncs.pdf" target="_blank"
-                >Terms & Conditions</a
-              >
-            </label>
-          </div>
-          <!-- register button -->
-          <button
-            type="submit"
-            class="btn"
-            name="registerbutton"
-            value="register"
-          >
-            Register
-          </button>
-          <div class="login-register">
-            <p>
-              Already have an account? <a href="#" class="login-link">Login</a>
-            </p>
-          </div>
-        </form>
+      <div class="wrapper">
+        <div class="form-box login">
+          {% if error %}
+          <p class="error">{{ error }}</p>
+          {% endif %}
+          <!-- login form -->
+          <form method="post" action="{{ url_for('login') }}">
+            <!-- email input -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="mail"></ion-icon>
+              </span>
+              <input
+                type="email"
+                name="em"
+                autocomplete="off"
+                placeholder="Email"
+                required
+              />
+            </div>
+
+            <!-- password input -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type="password"
+                name="pw"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <!-- remember me + forgot password field -->
+            <div class="remember-forgot">
+              <label> <input type="checkbox" />Remember me </label>
+              <a href="#">Forgot Password?</a>
+            </div>
+            <!-- login button -->
+            <button type="submit" class="btn" name="loginbutton" value="login">
+              Login
+            </button>
+            <!-- register an account field -->
+            <div class="login-register">
+              <p>
+                Don't have an account?
+                <a href="#" class="register-link">Register</a>
+              </p>
+            </div>
+          </form>
+        </div>
+        <!-- registration form -->
+        <div class="form-box register">
+          <h2>Register</h2>
+          <form method="post" action="{{ url_for('login') }}">
+            <!-- username field -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="person"></ion-icon>
+              </span>
+              <input
+                type="text"
+                name="uname-reg"
+                autocomplete="off"
+                placeholder="Username"
+                required
+              />
+            </div>
+            <!-- email field -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="mail"></ion-icon>
+              </span>
+              <input
+                type="email"
+                name="email-reg"
+                autocomplete="off"
+                placeholder="E-mail"
+                required
+              />
+            </div>
+            <!-- password field -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type="password"
+                name="pw-reg"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <!-- agree to TCs -->
+            <div class="remember-forgot">
+              <label>
+                <input type="checkbox" />I agree to SpendItSmart's
+                <a
+                  href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
+                  target="_blank"
+                  >Terms & Conditions</a
+                >
+              </label>
+            </div>
+            <!-- register button -->
+            <button
+              type="submit"
+              class="btn"
+              name="registerbutton"
+              value="register"
+            >
+              Register
+            </button>
+            <div class="login-register">
+              <p>
+                Already have an account?
+                <a href="#" class="login-link">Login</a>
+              </p>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
     <footer>
@@ -135,11 +151,17 @@
           <a href="mailto:allenbercero@gmail.com">L & A Software Inc.</a>
           &#8226; All Rights Reserved
           <br />
-          <a href="spenditsmart_privacy_policy.pdf" target="_blank"
+          <a
+            href="{{ url_for('serve_pdf', filename='spenditsmart_privacy_policy.pdf') }}"
+            target="_blank"
             >Privacy Policy</a
           >
           &#8226;
-          <a href="spenditsmart_tncs.pdf" target="_blank">Terms & Conditions</a>
+          <a
+            href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
+            target="_blank"
+            >Terms & Conditions</a
+          >
         </div>
       </div>
     </footer>
