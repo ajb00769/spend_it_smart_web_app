@@ -3,15 +3,20 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from cs50 import SQL
-from better_profanity import profanity
+from markupsafe import escape
+from datetime import timedelta
+import re
 
 
 app = Flask(__name__)
-app.secret_key = "this is just a test"
+app.config["SECRET_KEY"] = "super secret key"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
+app.config["SESSION_REFRESH_EACH_REQUEST"] = True
+
 Session(app)
+
 db = SQL("sqlite:///database.db")
 
 
@@ -48,8 +53,8 @@ def check_password(email, password):
 def register(user, email, password, agree):
     if not user or not email or not password:
         return "All fields must be filled"
-    elif len(password) < 10:
-        return "Password must be at least 10 characters long"
+    elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
+        return "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
     elif agree != "agreed":
         return "You must agree to the T&C's to register"
     elif db.execute(
@@ -92,8 +97,8 @@ def login():
         register_pressed = request.form.get("registerbutton", None)
 
         if login_pressed == "login":
-            email = request.form.get("em")
-            password = request.form.get("pw")
+            email = escape(request.form.get("em"))
+            password = escape(request.form.get("pw"))
 
             error_msg = check_password(email, password)
 
@@ -101,9 +106,9 @@ def login():
                 flash(error_msg)
 
         elif register_pressed == "register":
-            user = request.form.get("uname-reg")
-            email = request.form.get("email-reg")
-            password = request.form.get("pw-reg")
+            user = escape(request.form.get("uname-reg"))
+            email = escape(request.form.get("email-reg"))
+            password = escape(request.form.get("pw-reg"))
             agree_tcs = request.form.get("agree-tcs")
 
             reg_error = register(user, email, password, agree_tcs)
@@ -127,9 +132,3 @@ def dashboard():
 def logout():
     session.clear()
     return redirect(url_for("login"))
-
-
-# requirement for better profanity to work
-if __name__ == '__main__':
-    profanity.load_censor_words()
-    app.run()
