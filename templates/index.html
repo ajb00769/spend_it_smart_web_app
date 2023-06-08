@@ -38,7 +38,6 @@
                 name="em"
                 autocomplete="off"
                 placeholder="Email"
-                required
               />
             </div>
 
@@ -47,12 +46,7 @@
               <span class="icon">
                 <ion-icon name="lock-closed"></ion-icon>
               </span>
-              <input
-                type="password"
-                name="pw"
-                placeholder="Password"
-                required
-              />
+              <input type="password" name="pw" placeholder="Password" />
             </div>
             <!-- remember me + forgot password field -->
             <div class="remember-forgot">
@@ -86,7 +80,6 @@
                 name="uname-reg"
                 autocomplete="off"
                 placeholder="Username"
-                required
               />
             </div>
             <!-- email field -->
@@ -99,7 +92,6 @@
                 name="email-reg"
                 autocomplete="off"
                 placeholder="E-mail"
-                required
               />
             </div>
             <!-- password field -->
@@ -107,17 +99,13 @@
               <span class="icon">
                 <ion-icon name="lock-closed"></ion-icon>
               </span>
-              <input
-                type="password"
-                name="pw-reg"
-                placeholder="Password"
-                required
-              />
+              <input type="password" name="pw-reg" placeholder="Password" />
             </div>
             <!-- agree to TCs -->
             <div class="remember-forgot">
               <label>
-                <input type="checkbox" />I agree to SpendItSmart's
+                <input type="checkbox" name="agree-tcs" value="agreed" />I agree
+                to SpendItSmart's
                 <a
                   href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
                   target="_blank"

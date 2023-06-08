@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -22,6 +22,29 @@ def login_required(f):
             return redirect("/login")
         return f(*args, **kwargs)
     return decorated_function
+
+
+def login_user(user):
+    session["logged_in"] = True
+    session["user_id"] = user[0]['id']
+    return redirect(url_for("home"))
+
+
+def check_password(email, password):
+    check_login = db.execute(
+        "SELECT * FROM logins WHERE email=?", email)
+    returned_login = list(check_login)
+
+    if not len(returned_login):
+        return "Account not found"
+    elif email == returned_login[0]['email'] and not check_password_hash(returned_login[0]['password'], password):
+        return "Wrong Password"
+    elif email == returned_login[0]['email'] and check_password_hash(returned_login[0]['password'], password):
+        login_user(returned_login)
+
+
+def register():
+    return 0
 
 
 @app.after_request
@@ -49,7 +72,7 @@ def login():
     error = None
 
     if request.method == "GET" and session.get('logged_in'):
-        return redirect(url_for("home"))
+        return redirect(url_for("dashboard"))
 
     elif request.method == "POST":
         login_pressed = request.form.get("loginbutton", None)
@@ -61,33 +84,33 @@ def login():
 
             if not email or not password:
                 error = "All fields must be filled"
-            else:
-                check_login = db.execute(
-                    "SELECT * FROM logins WHERE email=?", email)
-                returned_login = list(check_login)
 
-                if not len(returned_login):
-                    error = "Account not found"
-                elif email == returned_login[0]['email'] and not check_password_hash(returned_login[0]['password'], password):
-                    error = "Wrong Password"
-                elif email == returned_login[0]['email'] and check_password_hash(returned_login[0]['password'], password):
-                    session["logged_in"] = True
-                    session["user_id"] = returned_login[0]['id']
-                    return redirect(url_for("home"))
+            error_msg = check_password(email, password)
+
+            if error_msg:
+                return render_template("index.html", error=error_msg)
 
         elif register_pressed == "register":
             uname = request.form.get("uname-reg")
             email = request.form.get("email-reg")
             password = generate_password_hash(request.form.get("pw-reg"))
+            agree_tcs = request.form.get("agree-tcs")
 
             if not uname or not email or not password:
                 error = "All fields must be filled"
+                return render_template("index.html", error=error)
+            elif len(password) < 10:
+                error = "Password must be at least 10 characters long"
+                return render_template("index.html", error=error)
 
-            user_count = db.execute("SELECT COUNT(*) FROM logins")
             is_username_taken = db.execute(
                 "SELECT username FROM logins WHERE username=?", uname)
             is_email_taken = db.execute(
                 "SELECT email FROM logins WHERE email=?", email)
+
+            if agree_tcs != "agreed":
+                error = "You must agree to the T&C's to register"
+                return render_template("index.html", error=error)
 
             if len(is_username_taken):
                 error = "Username already taken"
@@ -99,13 +122,13 @@ def login():
     return render_template("index.html", error=error)
 
 
-@app.route("/home", methods=["POST", "GET"])
+@app.route("/dashboard", methods=["POST", "GET"])
 @login_required
-def home():
+def dashboard():
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
-        return render_template("home.html")
+        return render_template("dashboard.html")
 
 
 @app.route("/logout")
