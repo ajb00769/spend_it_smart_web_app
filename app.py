@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -27,24 +27,40 @@ def login_required(f):
 def login_user(user):
     session["logged_in"] = True
     session["user_id"] = user[0]['id']
-    return redirect(url_for("home"))
+    return redirect(url_for("dashboard"))
 
 
 def check_password(email, password):
-    check_login = db.execute(
+    if not email or not password:
+        return "All fields must be filled"
+
+    fetch_login_from_db = db.execute(
         "SELECT * FROM logins WHERE email=?", email)
-    returned_login = list(check_login)
 
-    if not len(returned_login):
-        return "Account not found"
-    elif email == returned_login[0]['email'] and not check_password_hash(returned_login[0]['password'], password):
-        return "Wrong Password"
-    elif email == returned_login[0]['email'] and check_password_hash(returned_login[0]['password'], password):
-        login_user(returned_login)
+    fetched_login = list(fetch_login_from_db)
+
+    if not fetched_login or check_password_hash(fetched_login[0]['password'], password) == False:
+        return "Wrong Username or Password"
+    elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
+        login_user(fetched_login)
 
 
-def register():
-    return 0
+def register(user, email, password, agree):
+    if not user or not email or not password:
+        return "All fields must be filled"
+    elif len(password) < 10:
+        return "Password must be at least 10 characters long"
+    elif agree != "agreed":
+        return "You must agree to the T&C's to register"
+    elif db.execute(
+            "SELECT username FROM logins WHERE username=?", user):
+        return "Username already taken"
+    elif db.execute(
+            "SELECT email FROM logins WHERE email=?", email):
+        return "Email already registered"
+    else:
+        db.execute("INSERT INTO logins (username, email, password) VALUES (?, ?, ?)",
+                   user, email, generate_password_hash(password))
 
 
 @app.after_request
@@ -68,9 +84,6 @@ def index():
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
-
-    error = None
-
     if request.method == "GET" and session.get('logged_in'):
         return redirect(url_for("dashboard"))
 
@@ -82,44 +95,23 @@ def login():
             email = request.form.get("em")
             password = request.form.get("pw")
 
-            if not email or not password:
-                error = "All fields must be filled"
-
             error_msg = check_password(email, password)
 
             if error_msg:
-                return render_template("index.html", error=error_msg)
+                flash(error_msg)
 
         elif register_pressed == "register":
-            uname = request.form.get("uname-reg")
+            user = request.form.get("uname-reg")
             email = request.form.get("email-reg")
-            password = generate_password_hash(request.form.get("pw-reg"))
+            password = request.form.get("pw-reg")
             agree_tcs = request.form.get("agree-tcs")
 
-            if not uname or not email or not password:
-                error = "All fields must be filled"
-                return render_template("index.html", error=error)
-            elif len(password) < 10:
-                error = "Password must be at least 10 characters long"
-                return render_template("index.html", error=error)
+            reg_error = register(user, email, password, agree_tcs)
 
-            is_username_taken = db.execute(
-                "SELECT username FROM logins WHERE username=?", uname)
-            is_email_taken = db.execute(
-                "SELECT email FROM logins WHERE email=?", email)
+            if reg_error:
+                flash(reg_error)
 
-            if agree_tcs != "agreed":
-                error = "You must agree to the T&C's to register"
-                return render_template("index.html", error=error)
-
-            if len(is_username_taken):
-                error = "Username already taken"
-            elif len(is_email_taken):
-                error = "Email already registered"
-            else:
-                db.execute("INSERT INTO logins (username, email, password) VALUES (?, ?, ?)",
-                           uname, email, password)
-    return render_template("index.html", error=error)
+    return render_template("index.html")
 
 
 @app.route("/dashboard", methods=["POST", "GET"])

@@ -23,9 +23,13 @@
       </div>
       <div class="wrapper">
         <div class="form-box login">
-          {% if error %}
-          <p class="error">{{ error }}</p>
-          {% endif %}
+          {% with messages = get_flashed_messages() %} {% if messages %}
+          <ul class="error">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %} {% endwith %}
           <!-- login form -->
           <form method="post" action="{{ url_for('login') }}">
             <!-- email input -->
@@ -105,7 +109,7 @@
             <div class="remember-forgot">
               <label>
                 <input type="checkbox" name="agree-tcs" value="agreed" />I agree
-                to SpendItSmart's
+                to Spend It Smart's
                 <a
                   href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
                   target="_blank"

@@ -172,7 +172,11 @@ body > h1 {
 .error {
     text-align: center;
     color: red;
-    text-shadow: 1px 1px rgba(0, 0, 0, .5);
+    font-weight: bold;
+}
+
+.error > li {
+    list-style-type: none;
 }
 
 .footer-div {
