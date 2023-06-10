@@ -9,3 +9,8 @@ regsiterLink.addEventListener("click", () => {
 loginLink.addEventListener("click", () => {
   wrapper.classList.remove("active");
 });
+
+const button = document.querySelector(".btn");
+button.addEventListener("submit", () => {
+  button.classList.add("disabled");
+});

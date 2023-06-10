@@ -29,12 +29,6 @@ def login_required(f):
     return decorated_function
 
 
-def login_user(user):
-    session["logged_in"] = True
-    session["user_id"] = user[0]['id']
-    return redirect(url_for("dashboard"))
-
-
 def check_password(email, password):
     if not email or not password:
         return "All fields must be filled"
@@ -47,7 +41,8 @@ def check_password(email, password):
     if not fetched_login or check_password_hash(fetched_login[0]['password'], password) == False:
         return "Wrong Username or Password"
     elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
-        login_user(fetched_login)
+        session["user_id"] = fetched_login[0]['id']
+        session["logged_in"] = True
 
 
 def register(user, email, password, agree):
@@ -116,6 +111,7 @@ def login():
             if reg_error:
                 flash(reg_error)
 
+        return redirect(url_for("dashboard"))
     return render_template("index.html")
 
 
@@ -132,3 +128,7 @@ def dashboard():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
+if __name__ == '__main__':
+    app.run()
