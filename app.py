@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_wtf.csrf import CSRFProtect
 from functools import wraps
 from cs50 import SQL
 from markupsafe import escape
@@ -14,8 +15,14 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
+app.config.update(
+    DEBUG=True,
+    SECRET_KEY="secret_sauce",
+)
 
 Session(app)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 db = SQL("sqlite:///database.db")
 

@@ -67,6 +67,7 @@
             <button type="submit" class="btn" name="loginbutton" value="login">
               Login
             </button>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <!-- register an account field -->
             <div class="login-register">
               <p>
@@ -139,6 +140,7 @@
             >
               Register
             </button>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <div class="login-register">
               <p>
                 Already have an account?
