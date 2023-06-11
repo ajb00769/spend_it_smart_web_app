@@ -76,6 +76,7 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     response.headers["X-Frame-Options"] = "DENY"
+    # response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' https://secure.example.com; script-src 'self' https://secure.example.com; style-src 'self' https://secure.example.com; connect-src 'self' https://secure.example.com; font-src 'self' https://secure.example.com; object-src 'self' https://secure.example.com; frame-src 'self' https://secure.example.com"
     return response
 
 

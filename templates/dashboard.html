@@ -1,11 +1,34 @@
 {% extends 'layout.html' %} {% block body %}
-<div class="chart" id="chart">
-  <div class="chart-container">Chart</div>
-  <div class="details">
-    <ul>
-      <li>something <span class="percentage">99%</span></li>
-      <li>committing first changes to the dashboard branch</li>
-    </ul>
+<div class="container d-flex flex-wrap flex-column">
+  <h1>Welcome back, {{ username }}</h1>
+  <div class="wrapper">
+    <h2 class="chart-heading">
+      Here is your Financial Summary as of {{ month }} {{ year }}
+    </h2>
+    <div
+      class="finances d-flex flex-column flex-md-row justify-content-center"
+      id="finances"
+    >
+      <div class="chart-container">
+        <canvas class="my-chart"></canvas>
+      </div>
+      <div
+        class="chart-btns grid row-gap-3 d-flex flex-column justify-content-evenly"
+      >
+        <button class="btn btn-outline-primary" type="button">
+          Log A New Entry
+        </button>
+        <button class="btn btn-outline-primary" type="button">
+          View Table Breakdown
+        </button>
+        <button class="btn btn-outline-primary" type="button">
+          Create A Goal</button
+        ><button class="btn btn-outline-primary" type="button" disabled>
+          Get Insights
+        </button>
+      </div>
+    </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% endblock %}
 </div>
-{% endblock %}

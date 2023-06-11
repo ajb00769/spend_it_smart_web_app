@@ -1,27 +1,75 @@
-.menurightalign {
-    float: right;
-    text-align: right;
-    padding-right: 20px;
+@font-face {
+    font-family: "ITC Avant Garde Gothic Std";
+    src: url(/static/ITCAvantGardeStd-BkCnObl.otf) format("opentype");
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #2E3440;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #eceff48a;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ECEFF4;
 }
 
 .bannerformat {
-    padding-top: 20px;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.bg-color-01 {
-    background-color: #434C5E;
+.brand-font {
+    font-family: "ITC Avant Garde Gothic Std", Arial, Helvetica, sans-serif;
+    font-weight: 600;
 }
 
-.bg-color-02 {
-    background-color: #D8DEE9;
+.nav-item {
+    font-weight: 550;
 }
 
-.paragraph-format {
-    text-indent: 25pt;
-    text-align: justify;
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-top: 20px;
-    word-wrap: normal;
+.nav-logo {
+    filter: invert(100%);
+}
+
+.container {
+    margin-top: 40px;
+}
+
+.wrapper {
+    margin-top: 20px;
+}
+
+.container > h1 {
+    font-family: 'Questrial', sans-serif;
+    font-size: 30px;
+    text-align: center;    
+}
+
+.chart-heading {
+    font-family: 'Questrial', sans-serif;
+    color: #023047;
+    font-size: 24px;
+    text-align: center;
+}
+
+.chart-container {
+    margin-top: 20px;
+    min-width: 500px;
+}
+
+.finances {
+    margin-top: 30px;
+}
+
+.chart-btns {
+    margin-top: 30px;
 }
