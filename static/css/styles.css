@@ -44,8 +44,12 @@
     margin-top: 40px;
 }
 
-.wrapper {
+.fin-summary {
     margin-top: 20px;
+}
+
+.monthly-graph {
+    margin-top: 50px;
 }
 
 .container > h1 {

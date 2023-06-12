@@ -1,7 +1,7 @@
 {% extends 'layout.html' %} {% block body %}
 <div class="container d-flex flex-wrap flex-column">
   <h1>Welcome back, {{ username }}</h1>
-  <div class="wrapper">
+  <div class="fin-summary">
     <h2 class="chart-heading">
       Here is your Financial Summary as of {{ month }} {{ year }}
     </h2>
@@ -22,9 +22,34 @@
           View Table Breakdown
         </button>
         <button class="btn btn-outline-primary" type="button">
-          Create A Goal</button
-        ><button class="btn btn-outline-primary" type="button" disabled>
+          Create A Goal
+        </button>
+        <button class="btn btn-outline-primary" type="button" disabled>
           Get Insights
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="monthly-graph">
+    <h2 class="chart-heading">Your Month-on-Month Financial Activity</h2>
+    <div
+      class="finances d-flex flex-column flex-md-row justify-content-center"
+      id="finances"
+    >
+      <div class="chart-container">
+        <canvas class="my-graph-chart"></canvas>
+      </div>
+      <div
+        class="chart-btns grid row-gap-3 d-flex flex-column justify-content-evenly"
+      >
+        <button class="btn btn-outline-primary" type="button">
+          Generate YTD Financials
+        </button>
+        <button class="btn btn-outline-primary" type="button">
+          View Monthly Breakdown
+        </button>
+        <button class="btn btn-outline-primary" type="button" disabled>
+          Generate Forecast
         </button>
       </div>
     </div>
