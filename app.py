@@ -41,7 +41,7 @@ def check_password(email, password):
         return "All fields must be filled"
 
     fetch_login_from_db = db.execute(
-        "SELECT * FROM logins WHERE email=?", email)
+        "SELECT * FROM users WHERE email=?", email)
 
     fetched_login = list(fetch_login_from_db)
 
@@ -60,13 +60,13 @@ def register(user, email, password, agree):
     elif agree != "agreed":
         return "You must agree to the T&C's to register"
     elif db.execute(
-            "SELECT username FROM logins WHERE username=?", user):
+            "SELECT username FROM users WHERE username=?", user):
         return "Username already taken"
     elif db.execute(
-            "SELECT email FROM logins WHERE email=?", email):
+            "SELECT email FROM users WHERE email=?", email):
         return "Email already registered"
     else:
-        db.execute("INSERT INTO logins (username, email, password) VALUES (?, ?, ?)",
+        db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                    user, email, generate_password_hash(password))
 
 
@@ -129,7 +129,10 @@ def dashboard():
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
-        return render_template("dashboard.html")
+        get_user = db.execute(
+            "SELECT username FROM users WHERE id=?", session.get("user_id"))
+        current_user = get_user[0]['username']
+        return render_template("dashboard.html", username=current_user)
 
 
 @app.route("/logout")

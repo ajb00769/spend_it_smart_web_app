@@ -63,3 +63,22 @@ new Chart(myGraphChart, {
     },
   },
 });
+
+function modalHandler() {
+  $("#log-entry-modal").modal("show");
+}
+
+$("#entry-form").submit(function (e) {
+  e.preventDefault();
+  const form = $(e.target);
+  const content = $("#entry-form").serialize();
+  $.ajax({
+    url: "/submit",
+    data: {
+      content: $("#entry-form").serialize(),
+    },
+    success: function () {
+      $("#log-entry-modal").modal("hide");
+    },
+  });
+});

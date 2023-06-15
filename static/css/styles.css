@@ -40,18 +40,6 @@
     filter: invert(100%);
 }
 
-.container {
-    margin-top: 40px;
-}
-
-.fin-summary {
-    margin-top: 20px;
-}
-
-.monthly-graph {
-    margin-top: 50px;
-}
-
 .container > h1 {
     font-family: 'Questrial', sans-serif;
     font-size: 30px;
@@ -66,14 +54,5 @@
 }
 
 .chart-container {
-    margin-top: 20px;
     min-width: 500px;
-}
-
-.finances {
-    margin-top: 30px;
-}
-
-.chart-btns {
-    margin-top: 30px;
 }

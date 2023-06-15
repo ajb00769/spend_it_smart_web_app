@@ -1,23 +1,75 @@
 {% extends 'layout.html' %} {% block body %}
-<div class="container d-flex flex-wrap flex-column">
-  <h1>Welcome back, {{ username }}</h1>
-  <div class="fin-summary">
+<div class="container d-flex flex-wrap flex-column mt-4">
+  <h1 name="welcome">Welcome back, {{ username }}</h1>
+  <div class="mt-2">
     <h2 class="chart-heading">
       Here is your Financial Summary as of {{ month }} {{ year }}
     </h2>
     <div
-      class="finances d-flex flex-column flex-md-row justify-content-center"
+      class="finances d-flex flex-column flex-md-row justify-content-center mt-2"
       id="finances"
     >
-      <div class="chart-container">
+      <div class="chart-container mt-1">
         <canvas class="my-chart"></canvas>
       </div>
       <div
-        class="chart-btns grid row-gap-3 d-flex flex-column justify-content-evenly"
+        class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4"
       >
-        <button class="btn btn-outline-primary" type="button">
+        <button
+          class="btn btn-outline-primary"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#log-entry-modal"
+        >
           Log A New Entry
         </button>
+
+        <div
+          class="modal fade"
+          id="log-entry-modal"
+          tabindex="-1"
+          aria-labelledby="test-label"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="test-label">Log A New Entry</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <form id="entry-form">
+                  <div class="grid">
+                    <label for="entry">Transaction Type:</label>
+                    <select name="entry" id="entry">
+                      <option value="asset">Asset Purchase</option>
+                      <option value="liability">Liability / Debt</option>
+                      <option value="expense">Expense</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="button" class="btn btn-primary">
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button class="btn btn-outline-primary" type="button">
           View Table Breakdown
         </button>
@@ -30,17 +82,17 @@
       </div>
     </div>
   </div>
-  <div class="monthly-graph">
+  <div class="mt-5">
     <h2 class="chart-heading">Your Month-on-Month Financial Activity</h2>
     <div
-      class="finances d-flex flex-column flex-md-row justify-content-center"
+      class="d-flex flex-column flex-md-row justify-content-center mt-2"
       id="finances"
     >
-      <div class="chart-container">
+      <div class="chart-container mt-1">
         <canvas class="my-graph-chart"></canvas>
       </div>
       <div
-        class="chart-btns grid row-gap-3 d-flex flex-column justify-content-evenly"
+        class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4"
       >
         <button class="btn btn-outline-primary" type="button">
           Generate YTD Financials
