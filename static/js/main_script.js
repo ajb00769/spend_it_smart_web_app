@@ -64,21 +64,49 @@ new Chart(myGraphChart, {
   },
 });
 
-function modalHandler() {
-  $("#log-entry-modal").modal("show");
-}
+document
+  .getElementById("category-select")
+  .addEventListener("change", function () {
+    let selectedValue = this.value;
+    let secondSelectContainer = document.getElementById(
+      "second-select-container"
+    );
+    let secondSelect = document.getElementById("second-select");
 
-$("#entry-form").submit(function (e) {
-  e.preventDefault();
-  const form = $(e.target);
-  const content = $("#entry-form").serialize();
-  $.ajax({
-    url: "/submit",
-    data: {
-      content: $("#entry-form").serialize(),
-    },
-    success: function () {
-      $("#log-entry-modal").modal("hide");
-    },
+    if (selectedValue === "purchase") {
+      let optionsHTML = `
+         <option value="" hidden></option>
+         <option value="snacks">Snacks</option>
+         <option value="groceries">Groceries</option>
+       `;
+      secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
+      secondSelectContainer.style.display = "block";
+    } else if (selectedValue === "sell") {
+      let optionsHTML = `
+         <option value="" hidden></option>
+         <option value="electronics">Electronics</option>
+         <option value="furniture">Furniture</option>
+       `;
+      secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
+      secondSelectContainer.style.display = "block";
+    } else {
+      secondSelect.innerHTML = '<option value=""></option>';
+      secondSelectContainer.style.display = "none";
+    }
   });
-});
+
+document
+  .getElementById("second-select")
+  .addEventListener("change", function () {
+    let secondValue = this.value;
+    let transactAmountContainer = document.getElementById(
+      "transact-amount-container"
+    );
+    let transactAmount = document.getElementById("transact-amount");
+
+    if (secondValue !== "") {
+      transactAmountContainer.style.display = "block";
+    } else {
+      transactAmountContainer.style.display = "none";
+    }
+  });
