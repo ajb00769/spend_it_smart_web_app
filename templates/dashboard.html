@@ -45,7 +45,16 @@
                                 ></button>
                             </div>
                             <div class="modal-body">
-                                <form id="entry-form">
+                                <form
+                                    id="entry-form"
+                                    method="post"
+                                    action="/dashboard"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="{{ csrf_token() }}"
+                                    />
                                     <div class="grid row-cols-1 row-gap-3">
                                         <label for="category-select"
                                             >Transaction Type:</label
@@ -106,19 +115,22 @@
                                             />
                                         </div>
                                     </div>
+                                    <div class="modal-footer">
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary"
+                                        >
+                                            Save changes
+                                        </button>
+                                    </div>
                                 </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                >
-                                    Close
-                                </button>
-                                <button type="button" class="btn btn-primary">
-                                    Save changes
-                                </button>
                             </div>
                         </div>
                     </div>

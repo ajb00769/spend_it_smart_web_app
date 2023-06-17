@@ -126,6 +126,8 @@ def login():
 @app.route("/dashboard", methods=["POST", "GET"])
 @login_required
 def dashboard():
+    csrf_token = request.form.get("csrf_token")
+
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
@@ -133,6 +135,22 @@ def dashboard():
             "SELECT username FROM users WHERE id=?", session.get("user_id"))
         current_user = get_user[0]['username']
         return render_template("dashboard.html", username=current_user)
+    elif request.method == "POST" and csrf_token == session.get("csrf_token"):
+        print("CSRF Token:", csrf_token)
+        category = request.form.get("category-select")
+        subcat = request.form.get("second-select")
+        amount = request.form.get("transact-amount")
+        print("Category:", category)
+        print("Subcategory:", subcat)
+        print("Amount:", amount)
+    return redirect(url_for("login"))
+
+    # form_category = ['purchase', 'sell', 'income', 'invest', 'debt']
+    # form_purchase_sub = ['snacks', 'groceries', 'resto', 'clothing', 'shoes', 'bags', 'luxury', 'electronics', 'utilities', 'transpo']
+    # form_sell_sub = ['oldelectronics', 'oldfurniture', 'oldclothes', 'oldshoes', 'oldbags', 'oldluxury']
+    # form_income_sub = ['salary', 'businesssvc', 'businesssku', 'allowance']
+    # form_invest_sub = ['stocks', 'bonds', 'mfund', 'insurance', 'crypto', 'preciousmetals']
+    # form_debt_sub = ['studentloan', 'salaryloan', 'carloan', 'mortgage']
 
 
 @app.route("/logout")

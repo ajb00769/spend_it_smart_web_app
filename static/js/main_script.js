@@ -78,14 +78,58 @@ document
          <option value="" hidden></option>
          <option value="snacks">Snacks</option>
          <option value="groceries">Groceries</option>
+         <option value="resto">I Ate Outside</option>
+         <option value="clothing">Clothing</option>
+         <option value="shoes">Shoes</option>
+         <option value="bags">Bags</option>
+         <option value="luxury">Luxury Item ($1000+)</option>
+         <option value="electronics">TV / PC / Sound System / Etc</option>
+         <option value="utilities">I paid my utility bills (electricity, water, internet, etc)</option>
+         <option value="transpo">I bought gasoline / spent on transportation</option>
        `;
             secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
             secondSelectContainer.style.display = "block";
         } else if (selectedValue === "sell") {
             let optionsHTML = `
          <option value="" hidden></option>
-         <option value="electronics">Electronics</option>
-         <option value="furniture">Furniture</option>
+         <option value="oldelectronics">Owned Electronics</option>
+         <option value="oldfurniture">Owned Furniture</option>
+         <option value="oldclothes">Old Clothes</option>
+         <option value="oldshoes">Old Shoes</option>
+         <option value="oldbags">Old Bags</option>
+         <option value="oldluxury">Old Luxury Item</option>
+       `;
+            secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
+            secondSelectContainer.style.display = "block";
+        } else if (selectedValue === "income") {
+            let optionsHTML = `
+         <option value="" hidden></option>
+         <option value="salary">I earned my regular wage</option>
+         <option value="businesssvc">I earned money from my service business</option>
+         <option value="businesssku">I sold products from my business</option>
+         <option value="allowance">I got some allowance</option>
+       `;
+            secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
+            secondSelectContainer.style.display = "block";
+        } else if (selectedValue === "invest") {
+            let optionsHTML = `
+         <option value="" hidden></option>
+         <option value="stocks">Stocks</option>
+         <option value="bonds">Bonds</option>
+         <option value="mfund">Mutual Funds</option>
+         <option value="insurance">Investment Type Insurace</option>
+         <option value="crypto">Crypto</option>
+         <option value="preciousmetals">Precious Metals (i.e. Gold / Silver Bars or Forex, not jewelry)</option>
+       `;
+            secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
+            secondSelectContainer.style.display = "block";
+        } else if (selectedValue === "debt") {
+            let optionsHTML = `
+         <option value="" hidden></option>
+         <option value="studentloan">Student Loan</option>
+         <option value="salaryloan">Salary Loan</option>
+         <option value="carloan">Car Loan</option>
+         <option value="mortgage">I took our a Mortgage</option>
        `;
             secondSelect.innerHTML = DOMPurify.sanitize(optionsHTML);
             secondSelectContainer.style.display = "block";
