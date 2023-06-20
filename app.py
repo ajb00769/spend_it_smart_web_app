@@ -41,13 +41,24 @@ def check_password(email, password):
         return "All fields must be filled"
 
     fetch_login_from_db = db.execute(
-        "SELECT * FROM users WHERE email=?", email)
+        "SELECT * FROM users JOIN logins ON users.id=logins.user_id WHERE email=?", email)
 
     fetched_login = list(fetch_login_from_db)
 
-    if not fetched_login or check_password_hash(fetched_login[0]['password'], password) == False:
+    if not fetched_login:
+        return "Wrong Username or Password"
+    elif fetched_login[0]['account_disabled'] == 1:
+        return "Account Disabled - Too Many Failed Login Attempts"
+    elif check_password_hash(fetched_login[0]['password'], password) == False:
+        db.execute("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=?",
+                   fetched_login[0]['user_id'])
+        if fetched_login[0]['attempt_count'] >= 3:
+            db.execute("UPDATE logins SET account_disabled=1 WHERE user_id=?",
+                       fetched_login[0]['user_id'])
         return "Wrong Username or Password"
     elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
+        db.execute("UPDATE logins SET account_disabled=0 WHERE user_id=?",
+                   fetched_login[0]['user_id'])
         session["user_id"] = fetched_login[0]['id']
         session["logged_in"] = True
 
@@ -68,6 +79,7 @@ def register(user, email, password, agree):
     else:
         db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                    user, email, generate_password_hash(password))
+        db.execute("INSERT INTO logins (attempt_count) VALUES (0)")
 
 
 def validate_form_inputs(category, subcat, amount):
