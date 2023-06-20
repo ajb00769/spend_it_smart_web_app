@@ -123,6 +123,7 @@ def login():
             agree_tcs = request.form.get("agree-tcs")
 
             reg_error = register(user, email, password, agree_tcs)
+            time.sleep(3)
 
             if reg_error:
                 flash(reg_error)
