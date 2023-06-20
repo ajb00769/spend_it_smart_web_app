@@ -154,3 +154,46 @@ document
             transactAmountContainer.style.display = "none";
         }
     });
+
+document
+    .getElementById("entry-form")
+    .addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+        console.log(formData);
+
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
+        })
+            .then((response) => {
+                console.log(response);
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                console.log(data.success);
+                if (data.success) {
+                    document.getElementById("save-success").style.display =
+                        "block";
+                    document.getElementById("save-error").style.display =
+                        "none";
+                    setTimeout(function () {
+                        $("#entry-form")[0].reset();
+                        document.getElementById("save-success").style.display =
+                            "none";
+                        $("#log-entry-modal").modal("hide");
+                    }, 2000);
+                } else {
+                    document.getElementById("save-error").style.display =
+                        "block";
+                    document.getElementById("save-success").style.display =
+                        "none";
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+    });

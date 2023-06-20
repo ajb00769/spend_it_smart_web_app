@@ -25,7 +25,7 @@
                 </button>
 
                 <div
-                    class="modal fade"
+                    class="modal"
                     id="log-entry-modal"
                     tabindex="-1"
                     aria-labelledby="test-label"
@@ -48,7 +48,7 @@
                                 <form
                                     id="entry-form"
                                     method="post"
-                                    action="/dashboard"
+                                    action="{{ url_for('dashboard') }}"
                                 >
                                     <input
                                         type="hidden"
@@ -113,6 +113,20 @@
                                                 name="transact-amount"
                                                 id="transact-amount"
                                             />
+                                        </div>
+                                        <div
+                                            id="save-success"
+                                            class="text-center bg-primary-subtle"
+                                            style="display: none"
+                                        >
+                                            Save successful! Closing window.
+                                        </div>
+                                        <div
+                                            id="save-error"
+                                            class="text-center bg-danger"
+                                            style="display: none"
+                                        >
+                                            Save error!
                                         </div>
                                     </div>
                                     <div class="modal-footer">

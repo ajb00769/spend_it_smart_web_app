@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_wtf.csrf import CSRFProtect
@@ -70,6 +70,32 @@ def register(user, email, password, agree):
                    user, email, generate_password_hash(password))
 
 
+def validate_form_inputs(category, subcat, amount):
+    form_category = ['purchase', 'sell', 'income', 'invest', 'debt']
+    form_purchase_sub = ['snacks', 'groceries', 'resto', 'clothing',
+                         'shoes', 'bags', 'luxury', 'electronics', 'utilities', 'transpo']
+    form_sell_sub = ['oldelectronics', 'oldfurniture',
+                     'oldclothes', 'oldshoes', 'oldbags', 'oldluxury']
+    form_income_sub = ['salary', 'businesssvc', 'businesssku', 'allowance']
+    form_invest_sub = ['stocks', 'bonds', 'mfund',
+                       'insurance', 'crypto', 'preciousmetals']
+    form_debt_sub = ['studentloan', 'salaryloan', 'carloan', 'mortgage']
+
+    if category and subcat and amount:
+        if amount.isdigit() and int(amount) > 0:
+            if category == form_category[0] and subcat in form_purchase_sub:
+                return True
+            elif category == form_category[1] and subcat in form_sell_sub:
+                return True
+            elif category == form_category[2] and subcat in form_income_sub:
+                return True
+            elif category == form_category[3] and subcat in form_invest_sub:
+                return True
+            elif category == form_category[4] and subcat in form_debt_sub:
+                return True
+    return False
+
+
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -126,8 +152,6 @@ def login():
 @app.route("/dashboard", methods=["POST", "GET"])
 @login_required
 def dashboard():
-    csrf_token = request.form.get("csrf_token")
-
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
@@ -135,22 +159,26 @@ def dashboard():
             "SELECT username FROM users WHERE id=?", session.get("user_id"))
         current_user = get_user[0]['username']
         return render_template("dashboard.html", username=current_user)
-    elif request.method == "POST" and csrf_token == session.get("csrf_token"):
-        print("CSRF Token:", csrf_token)
+    elif request.method == "POST":
         category = request.form.get("category-select")
         subcat = request.form.get("second-select")
         amount = request.form.get("transact-amount")
-        print("Category:", category)
-        print("Subcategory:", subcat)
-        print("Amount:", amount)
-    return redirect(url_for("login"))
+        active_user = session.get("user_id")
+        print(active_user)
+        print("form info retrieved")
+        print(category, subcat, amount)
 
-    # form_category = ['purchase', 'sell', 'income', 'invest', 'debt']
-    # form_purchase_sub = ['snacks', 'groceries', 'resto', 'clothing', 'shoes', 'bags', 'luxury', 'electronics', 'utilities', 'transpo']
-    # form_sell_sub = ['oldelectronics', 'oldfurniture', 'oldclothes', 'oldshoes', 'oldbags', 'oldluxury']
-    # form_income_sub = ['salary', 'businesssvc', 'businesssku', 'allowance']
-    # form_invest_sub = ['stocks', 'bonds', 'mfund', 'insurance', 'crypto', 'preciousmetals']
-    # form_debt_sub = ['studentloan', 'salaryloan', 'carloan', 'mortgage']
+        if validate_form_inputs(category, subcat, amount):
+            print("validated")
+            db.execute(
+                "INSERT INTO transactions (user_id, account_title, category, amount) VALUES (?, ?, ?, ?)", active_user, subcat, category, amount)
+            print("inserted")
+            data = {'success': True}
+            return jsonify(data)
+        else:
+            data = {'success': False}
+            return jsonify(data)
+    return redirect(url_for("dashboard"))
 
 
 @app.route("/logout")
