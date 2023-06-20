@@ -10,7 +10,7 @@ import re
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "super secret key"
+app.config["SECRET_KEY"] = "x8dxf1xcaxb7Ex03S^xd5x04x80xeaxc0x90xe1(x83x13V4Hxbcx9fxec"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
@@ -68,6 +68,13 @@ def register(user, email, password, agree):
     else:
         db.execute("INSERT INTO logins (username, email, password) VALUES (?, ?, ?)",
                    user, email, generate_password_hash(password))
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    if request.form.get("remember-me") == "yes-remember":
+        app.permanent_session_lifetime = timedelta(days=30)
 
 
 @app.after_request
