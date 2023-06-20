@@ -7,6 +7,7 @@ from cs50 import SQL
 from markupsafe import escape
 from datetime import timedelta
 import re
+import time
 
 
 app = Flask(__name__)
@@ -110,6 +111,7 @@ def login():
             password = escape(request.form.get("pw"))
 
             error_msg = check_password(email, password)
+            time.sleep(3)
 
             if error_msg:
                 flash(error_msg)
