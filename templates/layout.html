@@ -11,20 +11,24 @@
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
+    <link href="/static/images/spenditsmartlogo.PNG" rel="icon" />
+    <link href="/static/css/styles.css" rel="stylesheet" />
   </head>
-  <body>
-    <nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark">
+  <body class="mb-5">
+    <nav class="navbar navbar-expand-md bg-black" data-bs-theme="dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img
-            src="/static/images/spenditsmartlogo.PNG"
-            alt="logo"
-            width="40"
-            height="36"
-            class="d-inline-block align-text-top"
-          />
-          Spend it Smart
-        </a>
+        <div class="d-flex align-content-center">
+          <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+            <img
+              src="/static/images/spenditsmartlogo.PNG"
+              alt="logo"
+              width="40"
+              height="40"
+              class="nav-logo"
+            />
+            <span class="brand-font">Spend It Smart</span>
+          </a>
+        </div>
         <button
           class="navbar-toggler"
           type="button"
@@ -36,8 +40,8 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse bannerformat" id="navbarNav">
+          <ul class="navbar-nav ms-auto text-center">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#"
                 >Dashboard</a
@@ -66,5 +70,8 @@
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"
     ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.1/dist/purify.min.js"></script>
   </body>
 </html>
