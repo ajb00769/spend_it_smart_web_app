@@ -186,15 +186,10 @@ def dashboard():
         subcat = request.form.get("second-select")
         amount = request.form.get("transact-amount")
         active_user = session.get("user_id")
-        print(active_user)
-        print("form info retrieved")
-        print(category, subcat, amount)
 
         if validate_form_inputs(category, subcat, amount):
-            print("validated")
             db.execute(
                 "INSERT INTO transactions (user_id, account_title, category, amount) VALUES (?, ?, ?, ?)", active_user, subcat, category, amount)
-            print("inserted")
             data = {'success': True}
             return jsonify(data)
         else:
