@@ -162,19 +162,15 @@ document
 
         const form = event.target;
         const formData = new FormData(form);
-        console.log(formData);
 
         fetch(form.action, {
             method: form.method,
             body: formData,
         })
             .then((response) => {
-                console.log(response);
                 return response.json();
             })
             .then((data) => {
-                console.log(data);
-                console.log(data.success);
                 if (data.success) {
                     document.getElementById("save-success").style.display =
                         "block";
