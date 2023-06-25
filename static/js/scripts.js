@@ -10,14 +10,9 @@ loginLink.addEventListener("click", () => {
     wrapper.classList.remove("active");
 });
 
-const button = document.querySelector(".btn");
-button.addEventListener("submit", () => {
-    button.classList.add("disabled");
-});
-
 const loginButton = document.getElementById("loginbutton");
 
-loginButton.addEventListener("click", () => {
+loginButton.addEventListener("submit", () => {
     loginButton.disabled = true;
     setTimeout(() => {
         loginButton.disabled = false;
@@ -26,7 +21,7 @@ loginButton.addEventListener("click", () => {
 
 const registerButton = document.getElementById("registerbutton");
 
-registerButton.addEventListener("click", () => {
+registerButton.addEventListener("submit", () => {
     registerButton.disabled = true;
     setTimeout(() => {
         registerButton.disabled = false;

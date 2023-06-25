@@ -151,7 +151,6 @@ def login():
             password = escape(request.form.get("pw"))
 
             error_msg = check_password(email, password)
-            time.sleep(3)
 
             if error_msg:
                 flash((error_msg, 'error'))
@@ -163,7 +162,6 @@ def login():
             agree_tcs = request.form.get("agree-tcs")
 
             reg_error = register(user, email, password, agree_tcs)
-            time.sleep(2)
 
             if reg_error == "Register success":
                 flash((reg_error, 'success'))
@@ -177,18 +175,35 @@ def login():
 @app.route("/dashboard", methods=["POST", "GET"])
 @login_required
 def dashboard():
+    current_session_userid = session.get("user_id")
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
         get_user = db.execute(
-            "SELECT username FROM users WHERE id=?", session.get("user_id"))
+            "SELECT username FROM users WHERE id=?", current_session_userid)
         current_user = get_user[0]['username']
         current_date = date.today()
         formatted_date = current_date.strftime("%B %d, %Y")
         # add all the retrieved chart data from server to the frontend
-        fetch_trasction_data = db.execute(
-            "SELECT * FROM transactions WHERE user_id=?", session.get("user_id"))
-        print(fetch_trasction_data)
+        # fetch_purchase_data = db.execute(
+        #     "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        # fetch_sell_data = db.execute(
+        #     "SELECT SUM(amount) AS total_assets_sold FROM transactions WHERE category='sell' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        # fetch_income_data = db.execute(
+        #     "SELECT SUM(amount) AS total_income FROM transactions WHERE category='income' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        # fetch_invest_data = db.execute(
+        #     "SELECT SUM(amount) AS total_investments FROM transactions WHERE category='invest' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        # fetch_debt_data = db.execute(
+        #     "SELECT SUM(amount) AS total_debt FROM transactions WHERE category='debt' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        # chart_kvps = [fetch_purchase_data[0], fetch_debt_data[0],
+        #               fetch_income_data[0], fetch_invest_data[0], fetch_sell_data[0]]
+        # chart_labels = []
+        # chart_values = []
+        # for item in chart_kvps:
+        #     key = list(item.keys())[0]
+        #     value = item[key]
+        #     chart_labels.append(key)
+        #     chart_values.append(value)
         return render_template("dashboard.html", username=current_user, date=formatted_date)
     elif request.method == "POST":
         category = request.form.get("category-select")

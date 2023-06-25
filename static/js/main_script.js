@@ -1,8 +1,3 @@
-const chartData = {
-    labels: ["Food", "Utilities", "Luxury", "Savings"],
-    data: [10, 20, 30, 40],
-};
-
 const myChart = document.querySelector(".my-chart");
 
 new Chart(myChart, {
