@@ -30,13 +30,15 @@
             <div class="wrapper">
                 <div class="form-box login">
                     {% with messages = get_flashed_messages() %} {% if messages
-                    %}
-                    <ul class="error">
-                        {% for message in messages %}
-                        <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %} {% endwith %}
+                    %} {% for message in messages %} {% set message_text,
+                    message_type = message %}
+                    <div
+                        class="text-center alert {% if message_type == 'success' %}alert-success{% else %}alert-danger{% endif %}"
+                    >
+                        {{ message_text }}
+                    </div>
+                    {% endfor %} {% endif %} {% endwith %}
+
                     <!-- login form -->
                     <form method="post" action="{{ url_for('login') }}">
                         <!-- email input -->

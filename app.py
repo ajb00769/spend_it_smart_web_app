@@ -58,7 +58,7 @@ def check_password(email, password):
                        fetched_login[0]['user_id'])
         return "Wrong Username or Password"
     elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
-        db.execute("UPDATE logins SET account_disabled=0 WHERE user_id=?",
+        db.execute("UPDATE logins SET account_disabled=0, attempt_count=0 WHERE user_id=?",
                    fetched_login[0]['user_id'])
         session["user_id"] = fetched_login[0]['id']
         session["logged_in"] = True
@@ -67,10 +67,10 @@ def check_password(email, password):
 def register(user, email, password, agree):
     if not user or not email or not password:
         return "All fields must be filled"
-    elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
-        return "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
     elif agree != "agreed":
         return "You must agree to the T&C's to register"
+    elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
+        return "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
     elif db.execute(
             "SELECT username FROM users WHERE username=?", user):
         return "Username already taken"
@@ -80,7 +80,7 @@ def register(user, email, password, agree):
     else:
         db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                    user, email, generate_password_hash(password))
-        db.execute("INSERT INTO logins (attempt_count) VALUES (0)")
+        return "Register success"
 
 
 def validate_form_inputs(category, subcat, amount):
@@ -153,7 +153,7 @@ def login():
             time.sleep(3)
 
             if error_msg:
-                flash(error_msg)
+                flash((error_msg, 'error'))
 
         elif register_pressed == "register":
             user = escape(request.form.get("uname-reg"))
@@ -162,10 +162,12 @@ def login():
             agree_tcs = request.form.get("agree-tcs")
 
             reg_error = register(user, email, password, agree_tcs)
-            time.sleep(3)
+            time.sleep(2)
 
-            if reg_error:
-                flash(reg_error)
+            if reg_error == "Register success":
+                flash((reg_error, 'success'))
+            elif reg_error:
+                flash((reg_error, 'error'))
 
         return redirect(url_for("dashboard"))
     return render_template("index.html")
