@@ -78,8 +78,9 @@ def register(user, email, password, agree):
             "SELECT email FROM users WHERE email=?", email):
         return "Email already registered"
     else:
-        db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                   user, email, generate_password_hash(password))
+        generated_id = db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                                  user, email, generate_password_hash(password))
+        db.execute("INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (?, 0, CURRENT_TIMESTAMP, 0)", generated_id)
         return "Register success"
 
 
@@ -184,6 +185,10 @@ def dashboard():
         current_user = get_user[0]['username']
         current_date = date.today()
         formatted_date = current_date.strftime("%B %d, %Y")
+        # add all the retrieved chart data from server to the frontend
+        fetch_trasction_data = db.execute(
+            "SELECT * FROM transactions WHERE user_id=?", session.get("user_id"))
+        print(fetch_trasction_data)
         return render_template("dashboard.html", username=current_user, date=formatted_date)
     elif request.method == "POST":
         category = request.form.get("category-select")

@@ -15,6 +15,7 @@
             <div
                 class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4"
             >
+                <!-- log a new entry button -->
                 <button
                     class="btn btn-outline-primary"
                     type="button"
@@ -23,7 +24,7 @@
                 >
                     Log A New Entry
                 </button>
-
+                <!-- behavior for logging a new entry defined -->
                 <div
                     class="modal"
                     id="log-entry-modal"
@@ -149,16 +150,16 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- table breakdown button -->
                 <button
                     class="btn btn-outline-primary"
                     data-bs-toggle="modal"
-                    data-bs-target=""
+                    data-bs-target="#table-modal"
                     type="button"
                 >
                     View Table Breakdown
                 </button>
-
+                <!-- behavior for getting table breakdown defined -->
                 <div
                     class="modal"
                     id="table-modal"
@@ -179,7 +180,7 @@
                                     aria-label="Close"
                                 ></button>
                             </div>
-                            <div class="modal-body"></div>
+                            <div class="modal-body">Body</div>
                         </div>
                     </div>
                 </div>
