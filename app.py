@@ -5,7 +5,7 @@ from flask_wtf.csrf import CSRFProtect
 from functools import wraps
 from cs50 import SQL
 from markupsafe import escape
-from datetime import timedelta
+from datetime import timedelta, date
 import re
 import time
 
@@ -180,7 +180,9 @@ def dashboard():
         get_user = db.execute(
             "SELECT username FROM users WHERE id=?", session.get("user_id"))
         current_user = get_user[0]['username']
-        return render_template("dashboard.html", username=current_user)
+        current_date = date.today()
+        formatted_date = current_date.strftime("%B %d, %Y")
+        return render_template("dashboard.html", username=current_user, date=formatted_date)
     elif request.method == "POST":
         category = request.form.get("category-select")
         subcat = request.form.get("second-select")
