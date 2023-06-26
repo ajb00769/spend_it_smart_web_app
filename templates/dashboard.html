@@ -117,14 +117,14 @@
                                         </div>
                                         <div
                                             id="save-success"
-                                            class="text-center bg-primary-subtle"
+                                            class="text-center alert alert-success"
                                             style="display: none"
                                         >
                                             Save successful! Closing window.
                                         </div>
                                         <div
                                             id="save-error"
-                                            class="text-center bg-danger"
+                                            class="text-center alert alert-danger"
                                             style="display: none"
                                         >
                                             Save error!
@@ -228,13 +228,19 @@
                   {
                     label: "Amount",
                     data: {{ values | safe }},
+                    backgroundColor: [
+                      'red',
+                      'orange',
+                      'green',
+                      'greenyellow',
+                      '#89cff0'
+                    ],
+                    borderWidth: 5,
+                    hoverBorderWidth: 0,
+                    borderRadius: 5,
                   }
                 ]
             },
-            options: {
-                borderWidth: 5,
-                hoverBorderWidth: 0,
-            }
         });
     </script>
 </div>

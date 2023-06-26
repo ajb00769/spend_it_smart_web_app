@@ -11,7 +11,7 @@ const graphExpenseData = {
 const myGraphChart = document.querySelector(".my-graph-chart");
 
 new Chart(myGraphChart, {
-    type: "line",
+    type: "bar",
     data: {
         labels: graphIncomeData.labels,
         graphExpenseData,

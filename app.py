@@ -183,7 +183,7 @@ def dashboard():
         current_user = get_user[0]['username']
         current_date = date.today()
         formatted_date = current_date.strftime("%B %d, %Y")
-        # add all the retrieved chart data from server to the frontend
+        # fetch sum of each category for the month
         fetch_purchase_data = db.execute(
             "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
         fetch_sell_data = db.execute(
