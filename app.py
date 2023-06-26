@@ -7,7 +7,6 @@ from cs50 import SQL
 from markupsafe import escape
 from datetime import timedelta, date
 import re
-import time
 
 
 app = Flask(__name__)
@@ -185,26 +184,28 @@ def dashboard():
         current_date = date.today()
         formatted_date = current_date.strftime("%B %d, %Y")
         # add all the retrieved chart data from server to the frontend
-        # fetch_purchase_data = db.execute(
-        #     "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        # fetch_sell_data = db.execute(
-        #     "SELECT SUM(amount) AS total_assets_sold FROM transactions WHERE category='sell' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        # fetch_income_data = db.execute(
-        #     "SELECT SUM(amount) AS total_income FROM transactions WHERE category='income' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        # fetch_invest_data = db.execute(
-        #     "SELECT SUM(amount) AS total_investments FROM transactions WHERE category='invest' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        # fetch_debt_data = db.execute(
-        #     "SELECT SUM(amount) AS total_debt FROM transactions WHERE category='debt' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        # chart_kvps = [fetch_purchase_data[0], fetch_debt_data[0],
-        #               fetch_income_data[0], fetch_invest_data[0], fetch_sell_data[0]]
-        # chart_labels = []
-        # chart_values = []
-        # for item in chart_kvps:
-        #     key = list(item.keys())[0]
-        #     value = item[key]
-        #     chart_labels.append(key)
-        #     chart_values.append(value)
-        return render_template("dashboard.html", username=current_user, date=formatted_date)
+        fetch_purchase_data = db.execute(
+            "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_sell_data = db.execute(
+            "SELECT SUM(amount) AS total_assets_sold FROM transactions WHERE category='sell' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_income_data = db.execute(
+            "SELECT SUM(amount) AS total_income FROM transactions WHERE category='income' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_invest_data = db.execute(
+            "SELECT SUM(amount) AS total_investments FROM transactions WHERE category='invest' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_debt_data = db.execute(
+            "SELECT SUM(amount) AS total_debt FROM transactions WHERE category='debt' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        chart_kvps = [fetch_purchase_data[0], fetch_debt_data[0],
+                      fetch_income_data[0], fetch_invest_data[0], fetch_sell_data[0]]
+        chart_labels = []
+        chart_values = []
+        for item in chart_kvps:
+            key = list(item.keys())[0]
+            value = item[key]
+            if value == None:
+                value = 0
+            chart_labels.append(key)
+            chart_values.append(value)
+        return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values)
     elif request.method == "POST":
         category = request.form.get("category-select")
         subcat = request.form.get("second-select")
@@ -219,7 +220,7 @@ def dashboard():
         else:
             data = {'success': False}
             return jsonify(data)
-    return redirect(url_for("dashboard"))
+    return render_template("dashboard.html")
 
 
 @app.route("/logout")

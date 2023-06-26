@@ -10,7 +10,7 @@
             id="finances"
         >
             <div class="chart-container mt-1">
-                <canvas class="my-chart"></canvas>
+                <canvas id="doughnutChart"></canvas>
             </div>
             <div
                 class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4"
@@ -218,6 +218,24 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    {% endblock %}
+    <script>
+        const doughnutCtx = document.getElementById("doughnutChart").getContext("2d");
+        const doughnutChart = new Chart(doughnutCtx, {
+            type: "doughnut",
+            data: {
+                labels: {{ labels | safe }},
+                datasets: [
+                  {
+                    label: "Amount",
+                    data: {{ values | safe }},
+                  }
+                ]
+            },
+            options: {
+                borderWidth: 5,
+                hoverBorderWidth: 0,
+            }
+        });
+    </script>
 </div>
+{% endblock %}

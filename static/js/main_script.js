@@ -1,27 +1,3 @@
-const myChart = document.querySelector(".my-chart");
-
-new Chart(myChart, {
-    type: "doughnut",
-    data: {
-        labels: chartData.labels,
-        datasets: [
-            {
-                label: "Category Spend / Save",
-                data: chartData.data,
-            },
-        ],
-    },
-    options: {
-        borderWidth: 5,
-        hoverBorderWidth: 0,
-        plugins: {
-            legend: {
-                FontFaceSet: "Questrial",
-            },
-        },
-    },
-});
-
 const graphIncomeData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     data: [30000, 40000, 37000, 22000, 32000, 27000],
@@ -176,6 +152,9 @@ document
                         document.getElementById("save-success").style.display =
                             "none";
                         $("#log-entry-modal").modal("hide");
+                    }, 1500);
+                    setTimeout(function () {
+                        location.reload();
                     }, 2000);
                 } else {
                     document.getElementById("save-error").style.display =
