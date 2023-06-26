@@ -1,35 +1,54 @@
 const graphIncomeData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     data: [30000, 40000, 37000, 22000, 32000, 27000],
 };
 
 const graphExpenseData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     data: [15000, 20000, 18000, 16000, 24000, 19000],
 };
+
+const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+];
 
 const myGraphChart = document.querySelector(".my-graph-chart");
 
 new Chart(myGraphChart, {
     type: "bar",
     data: {
-        labels: graphIncomeData.labels,
-        graphExpenseData,
+        labels: months.slice(0, graphIncomeData.data.length),
         datasets: [
             {
                 label: "Income",
                 data: graphIncomeData.data,
+                backgroundColor: "green",
             },
             {
                 label: "Expenses",
                 data: graphExpenseData.data,
+                backgroundColor: "red",
             },
         ],
     },
     options: {
-        plugins: {
-            legend: {
-                FontFaceSet: "Questrial",
+        scales: {
+            x: {
+                ticks: {
+                    callback: (value, index) => months[index],
+                },
+            },
+            y: {
+                beginAtZero: true,
             },
         },
     },
