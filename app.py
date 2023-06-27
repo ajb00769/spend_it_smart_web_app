@@ -200,10 +200,11 @@ def dashboard():
         chart_values = []
         for item in chart_kvps:
             key = list(item.keys())[0]
+            title_key = key.replace("_", " ").title()
             value = item[key]
             if value == None:
                 value = 0
-            chart_labels.append(key)
+            chart_labels.append(title_key)
             chart_values.append(value)
         # fetch values for bar chart
         fetch_barchart_data = db.execute(
@@ -212,7 +213,6 @@ def dashboard():
             new_item = datetime.strptime(
                 item['month_year'], '%m-%Y').strftime('%b')
             item['month_year'] = new_item
-        print(fetch_barchart_data)
         months = []
         income_data = []
         expense_data = []
@@ -223,9 +223,6 @@ def dashboard():
                 income_data.append(item['total_amount'])
             elif item['category'] == 'purchase':
                 expense_data.append(item['total_amount'])
-        print(months)
-        print(income_data)
-        print(expense_data)
         return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data)
     elif request.method == "POST":
         category = request.form.get("category-select")
