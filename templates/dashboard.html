@@ -201,7 +201,7 @@
             id="finances"
         >
             <div class="chart-container mt-1">
-                <canvas class="my-graph-chart"></canvas>
+                <canvas id="my-graph-chart"></canvas>
             </div>
             <div
                 class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4"
@@ -240,6 +240,42 @@
                     borderRadius: 5,
                   }
                 ]
+            },
+        });
+
+        const myGraphChart = document.getElementById("my-graph-chart");
+        const months = {{ month_labels | safe }};
+        const income_data = {{ income | safe }};
+        const expense_data = {{ expense | safe }};
+
+        new Chart(myGraphChart, {
+            type: "bar",
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: "Income",
+                        data: income_data,
+                        backgroundColor: "green",
+                    },
+                    {
+                        label: "Expenses",
+                        data: expense_data,
+                        backgroundColor: "red",
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    x: {
+                        ticks: {
+                            callback: (value, index) => months[index],
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
             },
         });
     </script>

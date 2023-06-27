@@ -5,7 +5,7 @@ from flask_wtf.csrf import CSRFProtect
 from functools import wraps
 from cs50 import SQL
 from markupsafe import escape
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 import re
 
 
@@ -205,7 +205,28 @@ def dashboard():
                 value = 0
             chart_labels.append(key)
             chart_values.append(value)
-        return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values)
+        # fetch values for bar chart
+        fetch_barchart_data = db.execute(
+            "SELECT STRFTIME('%m-%Y', transaction_date) AS month_year, category, SUM(amount) AS total_amount FROM transactions WHERE category IN ('income', 'purchase') AND STRFTIME('%Y', transaction_date) = STRFTIME('%Y', 'now') GROUP BY month_year, category")
+        for item in fetch_barchart_data:
+            new_item = datetime.strptime(
+                item['month_year'], '%m-%Y').strftime('%b')
+            item['month_year'] = new_item
+        print(fetch_barchart_data)
+        months = []
+        income_data = []
+        expense_data = []
+        for item in fetch_barchart_data:
+            if item['month_year'] not in months:
+                months.append(item['month_year'])
+            if item['category'] == 'income':
+                income_data.append(item['total_amount'])
+            elif item['category'] == 'purchase':
+                expense_data.append(item['total_amount'])
+        print(months)
+        print(income_data)
+        print(expense_data)
+        return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data)
     elif request.method == "POST":
         category = request.form.get("category-select")
         subcat = request.form.get("second-select")
