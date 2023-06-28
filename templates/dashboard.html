@@ -156,6 +156,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#table-modal"
                     type="button"
+                    id="table-breakdown"
                 >
                     View Table Breakdown
                 </button>
@@ -180,12 +181,17 @@
                                     aria-label="Close"
                                 ></button>
                             </div>
-                            <div class="modal-body">Body</div>
+                            <div class="modal-body">
+                                <table
+                                    id="breakdown-table"
+                                    class="table table-sm"
+                                ></table>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn btn-outline-primary" type="button">
+                <button class="btn btn-outline-primary disabled" type="button">
                     Create A Goal
                 </button>
                 <button class="btn btn-outline-primary" type="button" disabled>
@@ -206,10 +212,10 @@
             <div
                 class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4"
             >
-                <button class="btn btn-outline-primary" type="button">
+                <button class="btn btn-outline-primary disabled" type="button">
                     Generate YTD Financials
                 </button>
-                <button class="btn btn-outline-primary" type="button">
+                <button class="btn btn-outline-primary disabled" type="button">
                     View Monthly Breakdown
                 </button>
                 <button class="btn btn-outline-primary" type="button" disabled>
@@ -278,6 +284,8 @@
                 },
             },
         });
+
+        const tableData = {{ table_data | safe }};
     </script>
 </div>
 {% endblock %}

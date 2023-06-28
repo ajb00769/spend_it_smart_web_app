@@ -130,3 +130,50 @@ document
                 console.error("Error:", error);
             });
     });
+
+const dicts = tableData.map(function (item) {
+    return item;
+});
+const keys = Object.keys(dicts[0]);
+
+let dates = [];
+let accountTitle = [];
+let category = [];
+let amount = [];
+
+for (let currentRow = 0; currentRow < dicts.length; currentRow++) {
+    for (let currentKey = 0; currentKey < keys.length; currentKey++) {
+        if (currentKey == 0) {
+            dates.push(dicts[currentRow][keys[currentKey]]);
+        } else if (currentKey == 1) {
+            accountTitle.push(dicts[currentRow][keys[currentKey]]);
+        } else if (currentKey == 2) {
+            category.push(dicts[currentRow][keys[currentKey]]);
+        } else if (currentKey == 3) {
+            amount.push(dicts[currentRow][keys[currentKey]]);
+        }
+    }
+}
+
+document
+    .getElementById("table-breakdown")
+    .addEventListener("click", function () {
+        let tableMain = document.getElementById("breakdown-table");
+        for (let i = 0; i < dates.length; i++) {
+            tableMain.innerHTML +=
+                "<tr>" +
+                "<td>" +
+                dates[i] +
+                "</td>" +
+                "<td>" +
+                accountTitle[i] +
+                "</td>" +
+                "<td>" +
+                category[i] +
+                "</td>" +
+                "<td>" +
+                amount[i] +
+                "</td>" +
+                "</tr>";
+        }
+    });
