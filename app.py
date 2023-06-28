@@ -142,8 +142,8 @@ def login():
         return redirect(url_for("dashboard"))
 
     elif request.method == "POST":
-        login_pressed = request.form.get("loginbutton", None)
-        register_pressed = request.form.get("registerbutton", None)
+        login_pressed = escape(request.form.get("loginbutton", None))
+        register_pressed = escape(request.form.get("registerbutton", None))
 
         if login_pressed == "login":
             email = escape(request.form.get("em"))
@@ -225,9 +225,9 @@ def dashboard():
                 expense_data.append(item['total_amount'])
         return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data)
     elif request.method == "POST":
-        category = request.form.get("category-select")
-        subcat = request.form.get("second-select")
-        amount = request.form.get("transact-amount")
+        category = escape(request.form.get("category-select"))
+        subcat = escape(request.form.get("second-select"))
+        amount = escape(request.form.get("transact-amount"))
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
