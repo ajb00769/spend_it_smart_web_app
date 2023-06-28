@@ -3,8 +3,6 @@
     src: url(/static/ITCAvantGardeStd-BkCnObl.otf) format("opentype");
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
-
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -41,13 +39,13 @@
 }
 
 .container > h1 {
-    font-family: 'Questrial', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     font-size: 30px;
     text-align: center;    
 }
 
 .chart-heading {
-    font-family: 'Questrial', sans-serif;
+    font-family: 'Helvetica', sans-serif;
     color: #023047;
     font-size: 24px;
     text-align: center;
