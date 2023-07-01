@@ -225,11 +225,11 @@ def dashboard():
                 expense_data.append(item['total_amount'])
         # fetch transaction breakdown for the month
         fetch_user_transactions = db.execute(
-            "SELECT transaction_date, account_title, category, amount FROM transactions WHERE user_id=? ORDER BY category", current_session_userid)
+            "SELECT STRFTIME('%m/%d/%Y', transaction_date) AS transaction_date, account_title, category, amount FROM transactions WHERE user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now') ORDER BY category", current_session_userid)
         breakdown_categories = list(
             set(category['category'] for category in fetch_user_transactions))
         theads = list(fetch_user_transactions[0].keys())
-        return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, categories=breakdown_categories, table_headers=theads, transact_data=fetch_user_transactions)
+        return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, categories=breakdown_categories, table_headers=theads, transact_data=fetch_user_transactions)
     elif request.method == "POST":
         category = escape(request.form.get("category-select"))
         subcat = escape(request.form.get("second-select"))
@@ -244,7 +244,7 @@ def dashboard():
         else:
             data = {'success': False}
             return jsonify(data)
-    return render_template("dashboard.html")
+    return render_template("dashboard.jinja-html")
 
 
 @app.route("/logout")

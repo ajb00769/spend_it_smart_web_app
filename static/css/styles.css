@@ -39,13 +39,13 @@
 }
 
 .container > h1 {
-    font-family: 'Helvetica', sans-serif;
+    font-family: 'Noto Sans', sans-serif;
     font-size: 30px;
     text-align: center;    
 }
 
 .chart-heading {
-    font-family: 'Helvetica', sans-serif;
+    font-family: 'Noto Sans', sans-serif;
     color: #023047;
     font-size: 24px;
     text-align: center;
