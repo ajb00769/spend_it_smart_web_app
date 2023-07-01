@@ -54,3 +54,11 @@
 .chart-container {
     min-width: 500px;
 }
+
+.font20 {
+    font-size: 20px;
+}
+
+.align-right {
+    text-align: right;
+}

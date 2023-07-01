@@ -223,9 +223,13 @@ def dashboard():
                 income_data.append(item['total_amount'])
             elif item['category'] == 'purchase':
                 expense_data.append(item['total_amount'])
+        # fetch transaction breakdown for the month
         fetch_user_transactions = db.execute(
             "SELECT transaction_date, account_title, category, amount FROM transactions WHERE user_id=? ORDER BY category", current_session_userid)
-        return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, table_data=fetch_user_transactions)
+        breakdown_categories = list(
+            set(category['category'] for category in fetch_user_transactions))
+        theads = list(fetch_user_transactions[0].keys())
+        return render_template("dashboard.html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, categories=breakdown_categories, table_headers=theads, transact_data=fetch_user_transactions)
     elif request.method == "POST":
         category = escape(request.form.get("category-select"))
         subcat = escape(request.form.get("second-select"))

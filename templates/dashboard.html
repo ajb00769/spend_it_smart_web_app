@@ -182,10 +182,41 @@
                                 ></button>
                             </div>
                             <div class="modal-body">
-                                <table
-                                    id="breakdown-table"
-                                    class="table table-sm"
-                                ></table>
+                                {% for category in categories %}
+                                <div>
+                                    <table
+                                        id="breakdown-table"
+                                        class="table table-striped"
+                                    >
+                                        <h1 class="text-capitalize font20">
+                                            {{ category }}
+                                        </h1>
+                                        <tr>
+                                            {% for header in table_headers %} {%
+                                            if header != 'category' %}
+                                            <th>
+                                                {{ header.replace('_', '
+                                                ').title() }}
+                                            </th>
+                                            {% endif %} {% endfor %}
+                                        </tr>
+                                        {% for items in transact_data %}
+                                        <tr>
+                                            {% for key in table_headers %} {% if
+                                            key != 'category' and
+                                            items['category'] in category %} {%
+                                            if key == 'amount' %}
+                                            <td class="align-right">
+                                                {{ items[key] }}
+                                            </td>
+                                            {% else %}
+                                            <td>{{ items[key] }}</td>
+                                            {% endif %} {% endif %} {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -284,8 +315,6 @@
                 },
             },
         });
-
-        const tableData = {{ table_data | safe }};
     </script>
 </div>
 {% endblock %}
