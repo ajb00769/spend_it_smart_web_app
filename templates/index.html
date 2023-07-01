@@ -1,218 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-            name="description"
-            content="Monitor personal expenses and generate easy-to-digest reports on your personal finances. Make calculating your taxes easier and take control of your spending."
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Monitor personal expenses and generate easy-to-digest reports on your personal finances. Make calculating your taxes easier and take control of your spending."
+    />
+    <title>Login - Spend It Smart</title>
+    <link href="/static/images/spenditsmartlogo.PNG" rel="icon" />
+    <link href="/static/css/login-styles.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container d-flex flex-column flex-md-row">
+      <div class="logo-container">
+        <img
+          src="/static/images/spenditsmartlogo.PNG"
+          class="logo"
+          alt="logo"
         />
-        <title>Login - Spend It Smart</title>
-        <link href="/static/images/spenditsmartlogo.PNG" rel="icon" />
-        <link href="/static/css/login-styles.css" rel="stylesheet" />
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-            crossorigin="anonymous"
-        />
-    </head>
-    <body>
-        <div class="container d-flex flex-column flex-md-row">
-            <div class="logo-container">
-                <img
-                    src="/static/images/spenditsmartlogo.PNG"
-                    class="logo"
-                    alt="logo"
-                />
-            </div>
-            <div class="wrapper">
-                <div class="form-box login">
-                    {% with messages = get_flashed_messages() %} {% if messages
-                    %}
-                    <ul class="error">
-                        {% for message in messages %}
-                        <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %} {% endwith %}
-                    <!-- login form -->
-                    <form method="post" action="{{ url_for('login') }}">
-                        <!-- email input -->
-                        <div class="input-box">
-                            <span class="icon">
-                                <ion-icon name="mail"></ion-icon>
-                            </span>
-                            <input
-                                type="email"
-                                name="em"
-                                autocomplete="off"
-                                style="font-weight: 500"
-                                placeholder="Email"
-                            />
-                        </div>
+      </div>
+      <div class="wrapper">
+        <div class="form-box login">
+          {% with messages = get_flashed_messages() %} {% if messages %} {% for
+          message in messages %} {% set message_text, message_type = message %}
+          <div
+            class="text-center alert {% if message_type == 'success' %}alert-success{% else %}alert-danger{% endif %}"
+          >
+            {{ message_text }}
+          </div>
+          {% endfor %} {% endif %} {% endwith %}
 
-                        <!-- password input -->
-                        <div class="input-box">
-                            <span class="icon">
-                                <ion-icon name="lock-closed"></ion-icon>
-                            </span>
-                            <input
-                                type="password"
-                                name="pw"
-                                style="font-weight: 500"
-                                placeholder="Password"
-                            />
-                        </div>
-                        <!-- remember me + forgot password field -->
-                        <div class="remember-forgot">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="remember-me"
-                                    value="yes-remember"
-                                />Remember me
-                            </label>
-                            <a href="#">Forgot Password?</a>
-                        </div>
-                        <!-- login button -->
-                        <button
-                            type="submit"
-                            class="mybutton"
-                            name="loginbutton"
-                            id="loginbutton"
-                            value="login"
-                        >
-                            Login
-                        </button>
-                        <input
-                            type="hidden"
-                            name="csrf_token"
-                            value="{{ csrf_token() }}"
-                        />
-                        <!-- register an account field -->
-                        <div class="login-register">
-                            <p>
-                                Don't have an account?
-                                <a href="#" class="register-link">Register</a>
-                            </p>
-                        </div>
-                    </form>
-                </div>
-                <!-- registration form -->
-                <div class="form-box register">
-                    <h2>Register</h2>
-                    <form method="post" action="{{ url_for('login') }}">
-                        <!-- username field -->
-                        <div class="input-box">
-                            <span class="icon">
-                                <ion-icon name="person"></ion-icon>
-                            </span>
-                            <input
-                                type="text"
-                                name="uname-reg"
-                                autocomplete="off"
-                                style="font-weight: 500"
-                                placeholder="Username"
-                            />
-                        </div>
-                        <!-- email field -->
-                        <div class="input-box">
-                            <span class="icon">
-                                <ion-icon name="mail"></ion-icon>
-                            </span>
-                            <input
-                                type="email"
-                                name="email-reg"
-                                autocomplete="off"
-                                style="font-weight: 500"
-                                placeholder="E-mail"
-                            />
-                        </div>
-                        <!-- password field -->
-                        <div class="input-box">
-                            <span class="icon">
-                                <ion-icon name="lock-closed"></ion-icon>
-                            </span>
-                            <input
-                                type="password"
-                                name="pw-reg"
-                                style="font-weight: 500"
-                                placeholder="Password"
-                            />
-                        </div>
-                        <!-- agree to TCs -->
-                        <div class="remember-forgot">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="agree-tcs"
-                                    value="agreed"
-                                />I agree to Spend It Smart's
-                                <a
-                                    href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
-                                    target="_blank"
-                                    >Terms & Conditions</a
-                                >
-                            </label>
-                        </div>
-                        <!-- register button -->
-                        <button
-                            type="submit"
-                            class="mybutton"
-                            name="registerbutton"
-                            id="registerbutton"
-                            value="register"
-                        >
-                            Register
-                        </button>
-                        <input
-                            type="hidden"
-                            name="csrf_token"
-                            value="{{ csrf_token() }}"
-                        />
-                        <div class="login-register">
-                            <p>
-                                Already have an account?
-                                <a href="#" class="login-link">Login</a>
-                            </p>
-                        </div>
-                    </form>
-                </div>
+          <!-- login form -->
+          <form method="post" action="{{ url_for('login') }}">
+            <!-- email input -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="mail"></ion-icon>
+              </span>
+              <input
+                type="email"
+                name="em"
+                autocomplete="off"
+                style="font-weight: 500"
+                placeholder="Email"
+              />
             </div>
+
+            <!-- password input -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type="password"
+                name="pw"
+                style="font-weight: 500"
+                placeholder="Password"
+              />
+            </div>
+            <!-- remember me + forgot password field -->
+            <div class="remember-forgot">
+              <label>
+                <input
+                  type="checkbox"
+                  name="remember-me"
+                  value="yes-remember"
+                />Remember me
+              </label>
+              <a href="#">Forgot Password?</a>
+            </div>
+            <!-- login button -->
+            <button
+              type="submit"
+              class="mybutton"
+              name="loginbutton"
+              id="loginbutton"
+              value="login"
+            >
+              Login
+            </button>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <!-- register an account field -->
+            <div class="login-register">
+              <p>
+                Don't have an account?
+                <a href="#" class="register-link">Register</a>
+              </p>
+            </div>
+          </form>
         </div>
-        <footer>
-            <div class="footer-div">
-                <div>
-                    &copy; 2023
-                    <a href="mailto:allenbercero@gmail.com"
-                        >L & A Software Inc.</a
-                    >
-                    &#8226; All Rights Reserved
-                    <br />
-                    <a
-                        href="{{ url_for('serve_pdf', filename='spenditsmart_privacy_policy.pdf') }}"
-                        target="_blank"
-                        >Privacy Policy</a
-                    >
-                    &#8226;
-                    <a
-                        href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
-                        target="_blank"
-                        >Terms & Conditions</a
-                    >
-                </div>
+        <!-- registration form -->
+        <div class="form-box register">
+          <h2>Register</h2>
+          <form method="post" action="{{ url_for('login') }}">
+            <!-- username field -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="person"></ion-icon>
+              </span>
+              <input
+                type="text"
+                name="uname-reg"
+                autocomplete="off"
+                style="font-weight: 500"
+                placeholder="Username"
+              />
             </div>
-        </footer>
-        <script
-            type="module"
-            src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
-        ></script>
-        <script
-            nomodule
-            src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
-        ></script>
-        <script src="/static/js/scripts.js"></script>
-    </body>
+            <!-- email field -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="mail"></ion-icon>
+              </span>
+              <input
+                type="email"
+                name="email-reg"
+                autocomplete="off"
+                style="font-weight: 500"
+                placeholder="E-mail"
+              />
+            </div>
+            <!-- password field -->
+            <div class="input-box">
+              <span class="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type="password"
+                name="pw-reg"
+                style="font-weight: 500"
+                placeholder="Password"
+              />
+            </div>
+            <!-- agree to TCs -->
+            <div class="remember-forgot">
+              <label>
+                <input type="checkbox" name="agree-tcs" value="agreed" />I agree
+                to Spend It Smart's
+                <a
+                  href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
+                  target="_blank"
+                  >Terms & Conditions</a
+                >
+              </label>
+            </div>
+            <!-- register button -->
+            <button
+              type="submit"
+              class="mybutton"
+              name="registerbutton"
+              id="registerbutton"
+              value="register"
+            >
+              Register
+            </button>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="login-register">
+              <p>
+                Already have an account?
+                <a href="#" class="login-link">Login</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="footer-div">
+        <div>
+          &copy; 2023
+          <a href="mailto:allenbercero@gmail.com">L & A Software Inc.</a>
+          &#8226; All Rights Reserved
+          <br />
+          <a
+            href="{{ url_for('serve_pdf', filename='spenditsmart_privacy_policy.pdf') }}"
+            target="_blank"
+            >Privacy Policy</a
+          >
+          &#8226;
+          <a
+            href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
+            target="_blank"
+            >Terms & Conditions</a
+          >
+        </div>
+      </div>
+    </footer>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <script src="/static/js/scripts.js"></script>
+  </body>
 </html>

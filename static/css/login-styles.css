@@ -195,16 +195,6 @@ body > h1 {
     text-decoration: underline;
 }
 
-.error {
-    text-align: center;
-    color: red;
-    font-weight: bold;
-}
-
-.error > li {
-    list-style-type: none;
-}
-
 .footer-div {
     display: table;
     font-size: 12px;

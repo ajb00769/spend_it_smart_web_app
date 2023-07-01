@@ -5,9 +5,8 @@ from flask_wtf.csrf import CSRFProtect
 from functools import wraps
 from cs50 import SQL
 from markupsafe import escape
-from datetime import timedelta
+from datetime import timedelta, date, datetime
 import re
-import time
 
 
 app = Flask(__name__)
@@ -58,7 +57,7 @@ def check_password(email, password):
                        fetched_login[0]['user_id'])
         return "Wrong Username or Password"
     elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
-        db.execute("UPDATE logins SET account_disabled=0 WHERE user_id=?",
+        db.execute("UPDATE logins SET account_disabled=0, attempt_count=0 WHERE user_id=?",
                    fetched_login[0]['user_id'])
         session["user_id"] = fetched_login[0]['id']
         session["logged_in"] = True
@@ -67,10 +66,10 @@ def check_password(email, password):
 def register(user, email, password, agree):
     if not user or not email or not password:
         return "All fields must be filled"
-    elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
-        return "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
     elif agree != "agreed":
         return "You must agree to the T&C's to register"
+    elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
+        return "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
     elif db.execute(
             "SELECT username FROM users WHERE username=?", user):
         return "Username already taken"
@@ -78,9 +77,10 @@ def register(user, email, password, agree):
             "SELECT email FROM users WHERE email=?", email):
         return "Email already registered"
     else:
-        db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                   user, email, generate_password_hash(password))
-        db.execute("INSERT INTO logins (attempt_count) VALUES (0)")
+        generated_id = db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                                  user, email, generate_password_hash(password))
+        db.execute("INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (?, 0, CURRENT_TIMESTAMP, 0)", generated_id)
+        return "Register success"
 
 
 def validate_form_inputs(category, subcat, amount):
@@ -142,18 +142,17 @@ def login():
         return redirect(url_for("dashboard"))
 
     elif request.method == "POST":
-        login_pressed = request.form.get("loginbutton", None)
-        register_pressed = request.form.get("registerbutton", None)
+        login_pressed = escape(request.form.get("loginbutton", None))
+        register_pressed = escape(request.form.get("registerbutton", None))
 
         if login_pressed == "login":
             email = escape(request.form.get("em"))
             password = escape(request.form.get("pw"))
 
             error_msg = check_password(email, password)
-            time.sleep(3)
 
             if error_msg:
-                flash(error_msg)
+                flash((error_msg, 'error'))
 
         elif register_pressed == "register":
             user = escape(request.form.get("uname-reg"))
@@ -162,10 +161,11 @@ def login():
             agree_tcs = request.form.get("agree-tcs")
 
             reg_error = register(user, email, password, agree_tcs)
-            time.sleep(3)
 
-            if reg_error:
-                flash(reg_error)
+            if reg_error == "Register success":
+                flash((reg_error, 'success'))
+            elif reg_error:
+                flash((reg_error, 'error'))
 
         return redirect(url_for("dashboard"))
     return render_template("index.html")
@@ -174,17 +174,66 @@ def login():
 @app.route("/dashboard", methods=["POST", "GET"])
 @login_required
 def dashboard():
+    current_session_userid = session.get("user_id")
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
         get_user = db.execute(
-            "SELECT username FROM users WHERE id=?", session.get("user_id"))
+            "SELECT username FROM users WHERE id=?", current_session_userid)
         current_user = get_user[0]['username']
-        return render_template("dashboard.html", username=current_user)
+        current_date = date.today()
+        formatted_date = current_date.strftime("%B %d, %Y")
+        # fetch sum of each category for the month
+        fetch_purchase_data = db.execute(
+            "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_sell_data = db.execute(
+            "SELECT SUM(amount) AS total_assets_sold FROM transactions WHERE category='sell' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_income_data = db.execute(
+            "SELECT SUM(amount) AS total_income FROM transactions WHERE category='income' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_invest_data = db.execute(
+            "SELECT SUM(amount) AS total_investments FROM transactions WHERE category='invest' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        fetch_debt_data = db.execute(
+            "SELECT SUM(amount) AS total_debt FROM transactions WHERE category='debt' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        chart_kvps = [fetch_purchase_data[0], fetch_debt_data[0],
+                      fetch_income_data[0], fetch_invest_data[0], fetch_sell_data[0]]
+        chart_labels = []
+        chart_values = []
+        for item in chart_kvps:
+            key = list(item.keys())[0]
+            title_key = key.replace("_", " ").title()
+            value = item[key]
+            if value == None:
+                value = 0
+            chart_labels.append(title_key)
+            chart_values.append(value)
+        # fetch values for bar chart
+        fetch_barchart_data = db.execute(
+            "SELECT STRFTIME('%m-%Y', transaction_date) AS month_year, category, SUM(amount) AS total_amount FROM transactions WHERE category IN ('income', 'purchase') AND STRFTIME('%Y', transaction_date) = STRFTIME('%Y', 'now') GROUP BY month_year, category")
+        for item in fetch_barchart_data:
+            new_item = datetime.strptime(
+                item['month_year'], '%m-%Y').strftime('%b')
+            item['month_year'] = new_item
+        months = []
+        income_data = []
+        expense_data = []
+        for item in fetch_barchart_data:
+            if item['month_year'] not in months:
+                months.append(item['month_year'])
+            if item['category'] == 'income':
+                income_data.append(item['total_amount'])
+            elif item['category'] == 'purchase':
+                expense_data.append(item['total_amount'])
+        # fetch transaction breakdown for the month
+        fetch_user_transactions = db.execute(
+            "SELECT STRFTIME('%m/%d/%Y', transaction_date) AS transaction_date, account_title, category, amount FROM transactions WHERE user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now') ORDER BY category", current_session_userid)
+        breakdown_categories = list(
+            set(category['category'] for category in fetch_user_transactions))
+        theads = list(fetch_user_transactions[0].keys())
+        return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, categories=breakdown_categories, table_headers=theads, transact_data=fetch_user_transactions)
     elif request.method == "POST":
-        category = request.form.get("category-select")
-        subcat = request.form.get("second-select")
-        amount = request.form.get("transact-amount")
+        category = escape(request.form.get("category-select"))
+        subcat = escape(request.form.get("second-select"))
+        amount = escape(request.form.get("transact-amount"))
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
@@ -195,7 +244,7 @@ def dashboard():
         else:
             data = {'success': False}
             return jsonify(data)
-    return redirect(url_for("dashboard"))
+    return render_template("dashboard.jinja-html")
 
 
 @app.route("/logout")
