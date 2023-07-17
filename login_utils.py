@@ -1,9 +1,19 @@
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import session
+from flask import session, redirect
 from cs50 import SQL
 import re
+from functools import wraps
 
 db = SQL("sqlite:///database.db")
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("logged_in") is False:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 def check_password(email, password):

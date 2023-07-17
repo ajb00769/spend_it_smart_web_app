@@ -1,11 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
-from functools import wraps
 from markupsafe import escape
 from cs50 import SQL
 from datetime import timedelta, date, datetime
-from login_utils import check_password, register
+from login_utils import check_password, register, login_required
 
 
 app = Flask(__name__)
@@ -24,15 +23,6 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 
 db = SQL("sqlite:///database.db")
-
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("logged_in") is False:
-            return redirect("/login")
-        return f(*args, **kwargs)
-    return decorated_function
 
 
 def validate_form_inputs(category, subcat, amount):
