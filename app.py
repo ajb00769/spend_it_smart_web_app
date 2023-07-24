@@ -99,17 +99,29 @@ def dashboard():
         current_user = get_user[0]['username']
         current_date = date.today()
         formatted_date = current_date.strftime("%B %d, %Y")
+
         # fetch sum of each category for the month
         fetch_purchase_data = db.execute(
             "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        if not fetch_purchase_data:
+            fetch_purchase_data = [{'total_purchases': 0}]
         fetch_sell_data = db.execute(
             "SELECT SUM(amount) AS total_assets_sold FROM transactions WHERE category='sell' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        if not fetch_sell_data:
+            fetch_sell_data = [{'total_assets_sold': 0}]
         fetch_income_data = db.execute(
             "SELECT SUM(amount) AS total_income FROM transactions WHERE category='income' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        if not fetch_income_data:
+            fetch_income_data = [{'total_income': 0}]
         fetch_invest_data = db.execute(
             "SELECT SUM(amount) AS total_investments FROM transactions WHERE category='invest' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        if not fetch_invest_data:
+            fetch_invest_data = [{'total_investments': 0}]
         fetch_debt_data = db.execute(
             "SELECT SUM(amount) AS total_debt FROM transactions WHERE category='debt' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
+        if not fetch_debt_data:
+            fetch_debt_data = [{'total_debt': 0}]
+
         chart_kvps = [fetch_purchase_data[0], fetch_debt_data[0],
                       fetch_income_data[0], fetch_invest_data[0], fetch_sell_data[0]]
         chart_labels = []
@@ -122,9 +134,13 @@ def dashboard():
                 value = 0
             chart_labels.append(title_key)
             chart_values.append(value)
+
         # fetch values for bar chart
         fetch_barchart_data = db.execute(
-            "SELECT STRFTIME('%m-%Y', transaction_date) AS month_year, category, SUM(amount) AS total_amount FROM transactions WHERE category IN ('income', 'purchase') AND STRFTIME('%Y', transaction_date) = STRFTIME('%Y', 'now') GROUP BY month_year, category")
+            "SELECT STRFTIME('%m-%Y', transaction_date) AS month_year, category, SUM(amount) AS total_amount FROM transactions WHERE category IN ('income', 'purchase') AND STRFTIME('%Y', transaction_date) = STRFTIME('%Y', 'now') AND user_id=? GROUP BY month_year, category", current_session_userid)
+        if not fetch_barchart_data:
+            fetch_barchart_data = [
+                {'month_year': '01-1000', 'category': 'income', 'total_amount': 0}]
         for item in fetch_barchart_data:
             new_item = datetime.strptime(
                 item['month_year'], '%m-%Y').strftime('%b')
@@ -139,9 +155,13 @@ def dashboard():
                 income_data.append(item['total_amount'])
             elif item['category'] == 'purchase':
                 expense_data.append(item['total_amount'])
+
         # fetch transaction breakdown for the month
         fetch_user_transactions = db.execute(
             "SELECT STRFTIME('%m/%d/%Y', transaction_date) AS transaction_date, account_title, category, amount FROM transactions WHERE user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now') ORDER BY category", current_session_userid)
+        if not fetch_user_transactions:
+            fetch_user_transactions = [
+                {'transaction_date': '01/01/1000', 'account_title': 'none', 'category': 'none', 'amount': 0}]
         breakdown_categories = list(
             set(category['category'] for category in fetch_user_transactions))
         theads = list(fetch_user_transactions[0].keys())
