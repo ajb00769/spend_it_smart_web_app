@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/abercero/Documents/Dev/Projects/spend-it-smart-web-app/env"
+VIRTUAL_ENV="/home/abercero/Dev/Projects/spend-it-smart-web-app/env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

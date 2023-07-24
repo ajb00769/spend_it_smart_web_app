@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
-from markupsafe import escape
 from cs50 import SQL
 from datetime import timedelta, date, datetime
 from login_utils import check_password, register, login_required
@@ -59,12 +58,12 @@ def login():
         return redirect(url_for("dashboard"))
 
     elif request.method == "POST":
-        login_pressed = escape(request.form.get("loginbutton", None))
-        register_pressed = escape(request.form.get("registerbutton", None))
+        login_pressed = request.form.get("loginbutton", None)
+        register_pressed = request.form.get("registerbutton", None)
 
         if login_pressed == "login":
-            email = escape(request.form.get("em"))
-            password = escape(request.form.get("pw"))
+            email = request.form.get("em")
+            password = request.form.get("pw")
 
             error_msg = check_password(email, password)
 
@@ -72,9 +71,9 @@ def login():
                 flash((error_msg, 'error'))
 
         elif register_pressed == "register":
-            user = escape(request.form.get("uname-reg"))
-            email = escape(request.form.get("email-reg"))
-            password = escape(request.form.get("pw-reg"))
+            user = request.form.get("uname-reg")
+            email = request.form.get("email-reg")
+            password = request.form.get("pw-reg")
             agree_tcs = request.form.get("agree-tcs")
 
             reg_error = register(user, email, password, agree_tcs)
@@ -148,9 +147,9 @@ def dashboard():
         theads = list(fetch_user_transactions[0].keys())
         return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, categories=breakdown_categories, table_headers=theads, transact_data=fetch_user_transactions)
     elif request.method == "POST":
-        category = escape(request.form.get("category-select"))
-        subcat = escape(request.form.get("second-select"))
-        amount = escape(request.form.get("transact-amount"))
+        category = request.form.get("category-select")
+        subcat = request.form.get("second-select")
+        amount = request.form.get("transact-amount")
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
@@ -172,3 +171,8 @@ def logout():
 
 if __name__ == '__main__':
     app.run()
+
+# TEST ACCOUNT
+# uname: test_user
+# email: test@test.com
+# pw: &%H7wuScgiq?

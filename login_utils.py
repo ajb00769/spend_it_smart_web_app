@@ -49,7 +49,7 @@ def register(user, email, password, agree):
     elif agree != "agreed":
         return "You must agree to the T&C's to register"
     elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
-        return "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character"
+        return "Password must contain at least 1 upper and lower case letter, 1 digit, and 1 special character [@$!%*#?&]"
     elif db.execute(
             "SELECT username FROM users WHERE username=?", user):
         return "Username already taken"

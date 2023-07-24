@@ -1,4 +1,4 @@
-#!/home/abercero/Documents/Dev/Projects/spend-it-smart-web-app/env/bin/python
+#!/home/abercero/Dev/Projects/spend-it-smart-web-app/env/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
