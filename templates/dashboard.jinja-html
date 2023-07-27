@@ -7,7 +7,7 @@
     </h2>
     <div class="finances d-flex flex-column flex-md-row justify-content-center mt-2" id="finances">
       <div class="chart-container mt-1">
-        <canvas id="doughnutChart"></canvas>
+        <canvas id="doughnut-chart"></canvas>
       </div>
       <div class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4">
         <!-- log a new entry button -->
@@ -130,7 +130,7 @@
     <h2 class="chart-heading">Your Month-on-Month Financial Activity</h2>
     <div class="d-flex flex-column flex-md-row justify-content-center mt-2" id="finances">
       <div class="chart-container mt-1">
-        <canvas id="my-graph-chart"></canvas>
+        <canvas id="my-bar-chart"></canvas>
       </div>
       <div class="grid row-gap-3 d-flex flex-column justify-content-evenly mt-4">
         <button class="btn btn-outline-primary disabled" type="button">
@@ -145,8 +145,9 @@
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const doughnutCtx = document.getElementById("doughnutChart").getContext("2d");
+    const doughnutCtx = document.getElementById("doughnut-chart").getContext("2d");
     const doughnutChart = new Chart(doughnutCtx, {
       type: "doughnut",
       data: {
@@ -170,12 +171,14 @@
         },
     });
 
-    const myGraphChart = document.getElementById("my-graph-chart");
-    const months = {{ month_labels | safe }};
+    const myBarChart = document.getElementById("my-bar-chart");
+    const months = {{ months | safe
+    }};
     const income_data = {{ income | safe }};
+    const sell_data = {{ sell | safe }};
     const expense_data = {{ expense | safe }};
 
-    new Chart(myGraphChart, {
+    new Chart(myBarChart, {
       type: "bar",
       data: {
         labels: months,
@@ -184,6 +187,11 @@
             label: "Income",
             data: income_data,
             backgroundColor: "#03c04a",
+          },
+          {
+            label: "Sold",
+            data: sell_data,
+            backgroundColor: "#B6D0E2"
           },
           {
             label: "Expenses",

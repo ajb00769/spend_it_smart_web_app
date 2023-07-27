@@ -5,6 +5,7 @@ from cs50 import SQL
 from datetime import timedelta, date, datetime
 from login_utils import check_password, register, login_required
 from form_validation import validate_form_inputs
+from spend_it_smart_classes import CategorySums
 
 
 app = Flask(__name__)
@@ -97,75 +98,85 @@ def dashboard():
         get_user = db.execute(
             "SELECT username FROM users WHERE id=?", current_session_userid)
         current_user = get_user[0]['username']
-        current_date = date.today()
-        formatted_date = current_date.strftime("%B %d, %Y")
+        formatted_date = date.today().strftime("%B %d, %Y")
 
-        # fetch sum of each category for the month
-        fetch_purchase_data = db.execute(
-            "SELECT SUM(amount) AS total_purchases FROM transactions WHERE category='purchase' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        if not fetch_purchase_data:
-            fetch_purchase_data = [{'total_purchases': 0}]
-        fetch_sell_data = db.execute(
-            "SELECT SUM(amount) AS total_assets_sold FROM transactions WHERE category='sell' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        if not fetch_sell_data:
-            fetch_sell_data = [{'total_assets_sold': 0}]
-        fetch_income_data = db.execute(
-            "SELECT SUM(amount) AS total_income FROM transactions WHERE category='income' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        if not fetch_income_data:
-            fetch_income_data = [{'total_income': 0}]
-        fetch_invest_data = db.execute(
-            "SELECT SUM(amount) AS total_investments FROM transactions WHERE category='invest' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        if not fetch_invest_data:
-            fetch_invest_data = [{'total_investments': 0}]
-        fetch_debt_data = db.execute(
-            "SELECT SUM(amount) AS total_debt FROM transactions WHERE category='debt' AND user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now')", current_session_userid)
-        if not fetch_debt_data:
-            fetch_debt_data = [{'total_debt': 0}]
+        # fetch all user transactions since account creation, do not include user_id for security (sensitive data)
 
-        chart_kvps = [fetch_purchase_data[0], fetch_debt_data[0],
-                      fetch_income_data[0], fetch_invest_data[0], fetch_sell_data[0]]
-        chart_labels = []
-        chart_values = []
-        for item in chart_kvps:
-            key = list(item.keys())[0]
-            title_key = key.replace("_", " ").title()
-            value = item[key]
-            if value == None:
-                value = 0
-            chart_labels.append(title_key)
-            chart_values.append(value)
-
-        # fetch values for bar chart
-        fetch_barchart_data = db.execute(
-            "SELECT STRFTIME('%m-%Y', transaction_date) AS month_year, category, SUM(amount) AS total_amount FROM transactions WHERE category IN ('income', 'purchase') AND STRFTIME('%Y', transaction_date) = STRFTIME('%Y', 'now') AND user_id=? GROUP BY month_year, category", current_session_userid)
-        if not fetch_barchart_data:
-            fetch_barchart_data = [
-                {'month_year': '01-1000', 'category': 'income', 'total_amount': 0}]
-        for item in fetch_barchart_data:
-            new_item = datetime.strptime(
-                item['month_year'], '%m-%Y').strftime('%b')
-            item['month_year'] = new_item
-        months = []
-        income_data = []
-        expense_data = []
-        for item in fetch_barchart_data:
-            if item['month_year'] not in months:
-                months.append(item['month_year'])
-            if item['category'] == 'income':
-                income_data.append(item['total_amount'])
-            elif item['category'] == 'purchase':
-                expense_data.append(item['total_amount'])
-
-        # fetch transaction breakdown for the month
         fetch_user_transactions = db.execute(
-            "SELECT STRFTIME('%m/%d/%Y', transaction_date) AS transaction_date, account_title, category, amount FROM transactions WHERE user_id=? AND strftime('%m', transaction_date)=strftime('%m', 'now') ORDER BY category", current_session_userid)
-        if not fetch_user_transactions:
-            fetch_user_transactions = [
-                {'transaction_date': '01/01/1000', 'account_title': 'none', 'category': 'none', 'amount': 0}]
-        breakdown_categories = list(
-            set(category['category'] for category in fetch_user_transactions))
-        theads = list(fetch_user_transactions[0].keys())
-        return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=chart_labels, values=chart_values, month_labels=months, income=income_data, expense=expense_data, categories=breakdown_categories, table_headers=theads, transact_data=fetch_user_transactions)
+            "SELECT transaction_id, account_title, category, amount, transaction_date FROM transactions WHERE user_id=?", current_session_userid)
+
+        # create object instance for current month
+
+        current_month_sums = CategorySums()
+
+        # filter transactions to only current MONTH
+
+        current_month_transacts = []
+
+        for transaction in fetch_user_transactions:
+            date_str = transaction['transaction_date']
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            if date_obj.month == datetime.now().month:
+                current_month_transacts.append(transaction)
+
+        # iteratively sort per category for the current MONTH
+
+        for transaction in current_month_transacts:
+            category = transaction['category']
+            amount = transaction['amount']
+            current_month_sums.increment(category, amount)
+
+        # filter transactions for current YEAR
+
+        current_month_dict = vars(current_month_sums)
+        current_month_labels = list(current_month_dict.keys())
+        current_month_values = list(current_month_dict.values())
+
+        # bar chart data
+
+        current_year_transacts = []
+
+        # gets all user transactions for the current year
+
+        relevant_transactions = ['purchase', 'income', 'sell']
+
+        for transaction in fetch_user_transactions:
+            date_str = transaction['transaction_date']
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            if date_obj.year == datetime.now().year and transaction['category'] in relevant_transactions:
+                current_year_transacts.append(transaction)
+
+        sorted_transactions = sorted(
+            current_year_transacts, key=lambda x: x['transaction_date'])
+
+        monthly_transactions = {}
+
+        for transaction in sorted_transactions:
+            transaction_date = datetime.strptime(
+                transaction['transaction_date'], '%Y-%m-%d %H:%M:%S')
+            month = transaction_date.strftime('%B')
+            monthly_transactions.setdefault(month, []).append(transaction)
+
+        totals = {}
+
+        for month, transactions in monthly_transactions.items():
+            totals[month] = {}
+            for category in relevant_transactions:
+                total_amount = 0
+                for transaction in transactions:
+                    if transaction['category'] == category:
+                        total_amount += transaction['amount']
+                totals[month][category] = total_amount
+
+        totals_values = list(totals.values())
+
+        bar_chart_purchases = [item['purchase'] for item in totals_values]
+        bar_chart_income = [item['income'] for item in totals_values]
+        bar_chart_sell = [item['sell'] for item in totals_values]
+        # transaction date, account title, amount = table headers
+
+        return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=current_month_labels, values=current_month_values, categories=current_month_labels, months=list(totals.keys()), income=bar_chart_income, sell=bar_chart_sell, expense=bar_chart_purchases)
+
     elif request.method == "POST":
         category = request.form.get("category-select")
         subcat = request.form.get("second-select")
