@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
 @font-face {
     font-family: "ITC Avant Garde Gothic Std";
     src: url(/static/ITCAvantGardeStd-BkCnObl.otf) format("opentype");
+}
+
+body {
+    font-family: 'Questrial', sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -32,6 +38,7 @@
 
 .nav-item {
     font-weight: 500;
+    font-family: 'Questrial', sans-serif;
 }
 
 .nav-logo {
@@ -39,20 +46,20 @@
 }
 
 .container > h1 {
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Questrial', sans-serif;
     font-size: 30px;
     text-align: center;    
 }
 
 .chart-heading {
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Questrial', sans-serif;
     color: #023047;
     font-size: 24px;
     text-align: center;
 }
 
 .chart-container {
-    min-width: 500px;
+    max-width: 500px;
 }
 
 .font20 {
@@ -61,4 +68,18 @@
 
 .align-right {
     text-align: right;
+}
+
+.custom-table-title {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bolder;
+    font-family: ITC Avant Garde Gothic Std;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+option {
+    font-family: 'Questrial', sans-serif;
 }
