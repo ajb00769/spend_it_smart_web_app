@@ -173,9 +173,6 @@ def dashboard():
         bar_chart_purchases = [item['purchase'] for item in totals_values]
         bar_chart_income = [item['income'] for item in totals_values]
         bar_chart_sell = [item['sell'] for item in totals_values]
-        # transaction date, account title, amount = table headers
-
-        # sort current_month_transacts by current_month_labels (category list)
 
         breakdown_headers = ['transaction_date', 'account_title', 'amount']
 
