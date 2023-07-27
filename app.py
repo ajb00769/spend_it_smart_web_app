@@ -175,7 +175,24 @@ def dashboard():
         bar_chart_sell = [item['sell'] for item in totals_values]
         # transaction date, account title, amount = table headers
 
-        return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=current_month_labels, values=current_month_values, categories=current_month_labels, months=list(totals.keys()), income=bar_chart_income, sell=bar_chart_sell, expense=bar_chart_purchases)
+        # sort current_month_transacts by current_month_labels (category list)
+
+        breakdown_headers = ['transaction_date', 'account_title', 'amount']
+
+        breakdown_transacts = []
+
+        for transaction in current_year_transacts:
+            if transaction['account_title'] == 'businesssvc':
+                transaction['account_title'] = 'Service Income'
+            else:
+                transaction['account_title'] = transaction['account_title'].title()
+            date_string = transaction['transaction_date']
+            date_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+            transaction['transaction_date'] = date_obj.strftime('%m/%d/%Y')
+            transaction['amount'] = "{:,.2f}".format(transaction['amount'])
+            breakdown_transacts.append(transaction)
+
+        return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=current_month_labels, values=current_month_values, categories=current_month_labels, months=list(totals.keys()), income=bar_chart_income, sell=bar_chart_sell, expense=bar_chart_purchases, table_headers=breakdown_headers, transact_data=current_year_transacts)
 
     elif request.method == "POST":
         category = request.form.get("category-select")
