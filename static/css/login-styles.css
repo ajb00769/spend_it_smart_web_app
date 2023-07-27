@@ -211,3 +211,10 @@ body > h1 {
 .footer-div a:hover {
     text-decoration: underline;
 }
+
+#password-help {
+    display: flex;
+    line-height: 0.8;
+    margin-bottom: -0.5em;
+    text-align: justify;
+}

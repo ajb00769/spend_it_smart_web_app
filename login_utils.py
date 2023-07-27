@@ -48,8 +48,8 @@ def register(user, email, password, agree):
         return "All fields must be filled"
     elif agree != "agreed":
         return "You must agree to the T&C's to register"
-    elif not re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$', password):
-        return "Password must contain at least 1 upper and lower case letter, 1 digit, and 1 special character [@$!%*#?&]"
+    elif check_password_strength(password) != 'strong':
+        return "Password not strong enough. Please don't change the code in the developer console."
     elif db.execute(
             "SELECT username FROM users WHERE username=?", user):
         return "Username already taken"
@@ -61,3 +61,10 @@ def register(user, email, password, agree):
                                   user, email, generate_password_hash(password))
         db.execute("INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (?, 0, CURRENT_TIMESTAMP, 0)", generated_id)
         return "Register success"
+
+
+def check_password_strength(password):
+    if re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{12,}$', password):
+        return 'strong'
+    else:
+        return 'weak'
