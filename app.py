@@ -15,8 +15,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
 app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_DOMAIN='spend-it-smart-web-app.vercel.app',
+    SESSION_COOKIE_SECURE=False, # just for testing
+    # SESSION_COOKIE_DOMAIN='spend-it-smart-web-app.vercel.app',
 )
 
 Session(app)
@@ -39,7 +39,7 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     response.headers["X-Frame-Options"] = "DENY"
-    # response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' https://secure.example.com; script-src 'self' https://secure.example.com; style-src 'self' https://secure.example.com; connect-src 'self' https://secure.example.com; font-src 'self' https://secure.example.com; object-src 'self' https://secure.example.com; frame-src 'self' https://secure.example.com"
+    # response.headers["Content-Security-Policy"] = "default-src 'self' https://spend-it-smart-web-app.vercel.app";
     return response
 
 
