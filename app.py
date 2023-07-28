@@ -6,10 +6,11 @@ from datetime import timedelta, date, datetime
 from login_utils import check_password, register, login_required
 from form_validation import validate_form_inputs
 from spend_it_smart_classes import CategorySums
+import os
 
 
 app = Flask(__name__)
-app.secret_key = "075d9638e7f80d7304f8b547e51c86b0"
+app.secret_key = os.environ.get('SECRET_KEY')
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
