@@ -14,10 +14,9 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
-app.config.update(
-    SESSION_COOKIE_SECURE=False,
-    SESSION_COOKIE_DOMAIN=False,
-)
+app.config["SESSION_COOKIE_SECURE"] = False
+app.config["SESSION_COOKIE_DOMAIN"] = False
+
 
 Session(app)
 csrf = CSRFProtect(app)
