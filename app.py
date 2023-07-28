@@ -9,7 +9,7 @@ from spend_it_smart_classes import CategorySums
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "x8dxf1xcaxb7Ex03S^xd5x04x80xeaxc0x90xe1(x83x13V4Hxbcx9fxec"
+app.config["SECRET_KEY"] = "075d9638e7f80d7304f8b547e51c86b0"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
