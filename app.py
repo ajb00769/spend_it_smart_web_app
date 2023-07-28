@@ -15,12 +15,12 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
 app.config.update(
-    SESSION_COOKIE_SECURE=False, # just for testing
-    # SESSION_COOKIE_DOMAIN='spend-it-smart-web-app.vercel.app',
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_DOMAIN='spend-it-smart-web-app.vercel.app',
 )
 
 Session(app)
-csrf = CSRFProtect()
+csrf = CSRFProtect(app)
 csrf.init_app(app)
 
 db = SQL("sqlite:///database.db")
