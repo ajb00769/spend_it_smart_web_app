@@ -221,3 +221,4 @@ if __name__ == '__main__':
 # uname: test_user
 # email: test@test.com
 # pw: &%H7wuScgiq?
+# https://spend-it-smart-web-app.vercel.app/login
