@@ -13,4 +13,3 @@ sqlparse==0.4.4
 termcolor==2.3.0
 Werkzeug==2.2.3
 WTForms==3.0.1
-os==3.9.7
