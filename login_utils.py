@@ -49,10 +49,12 @@ def check_password(email, password):
         update_failed_login_attempt = text("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=:user_id")
         g.db.execute(update_failed_login_attempt,
                      {"user_id": fetched_login['user_id']})
+        g.db.commit()
         if fetched_login['attempt_count'] >= 3:
             disable_account = text("UPDATE logins SET account_disabled=True WHERE user_id=:user_id")
             g.db.execute(disable_account,
                          {"user_id": fetched_login['user_id']})
+            g.db.commit()
         return "Wrong Username or Password"
     elif email == fetched_login['email'] and check_password_hash(fetched_login['password'], password):
         reset_attempts_upon_success = text("UPDATE logins SET account_disabled=False, attempt_count=0 WHERE user_id=:user_id")
@@ -60,6 +62,7 @@ def check_password(email, password):
                      {"user_id": fetched_login['user_id']})
         session["user_id"] = fetched_login['id']
         session["logged_in"] = True
+        g.db.commit()
 
 
 def register(user, email, password, agree):
