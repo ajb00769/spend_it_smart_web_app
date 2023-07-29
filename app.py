@@ -12,7 +12,7 @@ csrf = CSRFProtect(app)
 csrf.init_app(app)
 
 
-class Session(db.Model):
+class SessionModel(db.Model):
     __tablename__ = "sessions"
     id = db.Column(db.String(255), primary_key=True)
     data = db.Column(db.LargeBinary)
@@ -20,6 +20,9 @@ class Session(db.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+Session(app)
 
 
 with app.app_context():
