@@ -1,29 +1,29 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
+from flask import render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
-from cs50 import SQL
 from datetime import timedelta, date, datetime
-from login_utils import check_password, register, login_required
 from form_validation import validate_form_inputs
 from spend_it_smart_classes import CategorySums
+from login_utils import app, db, login_required, check_password, register, get_current_user, get_user_transactions, add_transaction
 
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "x8dxf1xcaxb7Ex03S^xd5x04x80xeaxc0x90xe1(x83x13V4Hxbcx9fxec"
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
-app.config["SESSION_REFRESH_EACH_REQUEST"] = True
-app.config.update(
-    DEBUG=True,
-    SECRET_KEY="secret_sauce",
-)
-
-Session(app)
-csrf = CSRFProtect()
+app.config.from_pyfile("config.py")
+csrf = CSRFProtect(app)
 csrf.init_app(app)
 
-db = SQL("sqlite:///database.db")
+
+class Session(db.Model):
+    __tablename__ = "sessions"
+    id = db.Column(db.String(255), primary_key=True)
+    data = db.Column(db.LargeBinary)
+    expiry = db.Column(db.DateTime)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+with app.app_context():
+    db.create_all()
 
 
 @app.before_request
@@ -33,13 +33,18 @@ def make_session_permanent():
         app.permanent_session_lifetime = timedelta(days=30)
 
 
+@app.before_request
+def renew_session():
+    session.modified = True
+
+
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     response.headers["X-Frame-Options"] = "DENY"
-    # response.headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' https://secure.example.com; script-src 'self' https://secure.example.com; style-src 'self' https://secure.example.com; connect-src 'self' https://secure.example.com; font-src 'self' https://secure.example.com; object-src 'self' https://secure.example.com; frame-src 'self' https://secure.example.com"
+    # response.headers["Content-Security-Policy"] = "default-src 'self' https://spend-it-smart-web-app.vercel.app";
     return response
 
 
@@ -95,15 +100,14 @@ def dashboard():
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
-        get_user = db.execute(
-            "SELECT username FROM users WHERE id=?", current_session_userid)
+        get_user = get_current_user(current_session_userid)
         current_user = get_user[0]['username']
         formatted_date = date.today().strftime("%B %d, %Y")
 
         # fetch all user transactions since account creation, do not include user_id for security (sensitive data)
 
-        fetch_user_transactions = db.execute(
-            "SELECT transaction_id, account_title, category, amount, transaction_date FROM transactions WHERE user_id=?", current_session_userid)
+        fetch_user_transactions = get_user_transactions(
+            current_session_userid)
 
         # create object instance for current month
 
@@ -114,8 +118,8 @@ def dashboard():
         current_month_transacts = []
 
         for transaction in fetch_user_transactions:
-            date_str = transaction['transaction_date']
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            date_str = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             if date_obj.month == datetime.now().month:
                 current_month_transacts.append(transaction)
 
@@ -141,8 +145,8 @@ def dashboard():
         relevant_transactions = ['purchase', 'income', 'sell']
 
         for transaction in fetch_user_transactions:
-            date_str = transaction['transaction_date']
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            date_str = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             if date_obj.year == datetime.now().year and transaction['category'] in relevant_transactions:
                 current_year_transacts.append(transaction)
 
@@ -153,7 +157,7 @@ def dashboard():
 
         for transaction in sorted_transactions:
             transaction_date = datetime.strptime(
-                transaction['transaction_date'], '%Y-%m-%d %H:%M:%S')
+                transaction['transaction_date'].strftime('%Y-%m-%d'), '%Y-%m-%d')
             month = transaction_date.strftime('%B')
             monthly_transactions.setdefault(month, []).append(transaction)
 
@@ -176,18 +180,9 @@ def dashboard():
 
         breakdown_headers = ['transaction_date', 'account_title', 'amount']
 
-        breakdown_transacts = []
-
         for transaction in current_year_transacts:
-            if transaction['account_title'] == 'businesssvc':
-                transaction['account_title'] = 'Service Income'
-            else:
-                transaction['account_title'] = transaction['account_title'].title()
-            date_string = transaction['transaction_date']
-            date_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
-            transaction['transaction_date'] = date_obj.strftime('%m/%d/%Y')
-            transaction['amount'] = "{:,.2f}".format(transaction['amount'])
-            breakdown_transacts.append(transaction)
+            date_string = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_obj = datetime.strptime(date_string, '%Y-%m-%d')
 
         return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=current_month_labels, values=current_month_values, categories=current_month_labels, months=list(totals.keys()), income=bar_chart_income, sell=bar_chart_sell, expense=bar_chart_purchases, table_headers=breakdown_headers, transact_data=current_year_transacts)
 
@@ -198,8 +193,7 @@ def dashboard():
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
-            db.execute(
-                "INSERT INTO transactions (user_id, account_title, category, amount) VALUES (?, ?, ?, ?)", active_user, subcat, category, amount)
+            add_transaction(active_user, subcat, category, amount)
             data = {'success': True}
             return jsonify(data)
         else:
@@ -221,3 +215,4 @@ if __name__ == '__main__':
 # uname: test_user
 # email: test@test.com
 # pw: &%H7wuScgiq?
+# https://spend-it-smart-web-app.vercel.app/login

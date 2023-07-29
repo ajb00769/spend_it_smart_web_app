@@ -27,18 +27,30 @@
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                   <div class="grid row-cols-1 row-gap-3">
                     <label for="category-select">Transaction Type:</label>
-                    <select class="form-control mb-2" name="category-select" id="category-select">
+                    <select class="form-control custom-select mb-2" name="category-select" id="category-select">
                       <!-- category -->
-                      <option class="disabled" hidden>Choose a transaction type...</option>
-                      <option value="purchase">
+                      <ul class="options">
+                        <li>
+                          <option class="disabled" hidden>Choose a transaction type...</option>
+                        </li>
+                        <li>
+                          <option value="purchase">
+                        </li>
                         I bought or spent on something
-                      </option>
-                      <option value="sell">I sold something</option>
-                      <option value="income">I earned some money</option>
-                      <option value="invest">
+                        </option>
+                        <li>
+                          <option value="sell">I sold something</option>
+                        </li>
+                        <li>
+                          <option value="income">I earned some money</option>
+                        </li>
+                        <li>
+                          <option value="invest">
+                        </li>
                         I invested in some stocks/bonds/etc
-                      </option>
-                      <option value="debt">I took out a loan</option>
+                        </option>
+                        <option value="debt">I took out a loan</option>
+                      </ul>
                     </select>
                     <div class="grid row-cols-1 row-gap-3" id="second-select-container" style="display: none">
                       <label for="second-select">Select Transaction:</label>
