@@ -8,7 +8,6 @@ from spend_it_smart_classes import CategorySums
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart'
 app.config["SECRET_KEY"] = "f63a8b5b8af1e63a5302d3eaf1166eff057dce63"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -16,6 +15,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config['PREFERRED_URL_SCHEME'] = 'https'
+
 Session(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)

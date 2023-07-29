@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart'
+
 db = SQLAlchemy(app)
 
 
@@ -44,15 +46,15 @@ def check_password(email, password):
     elif fetched_login[0]['account_disabled'] == 1:
         return "Account Disabled - Too Many Failed Login Attempts"
     elif check_password_hash(fetched_login[0]['password'], password) == False:
-        g.db.execute("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=?",
-                     fetched_login[0]['user_id'])
+        g.db.execute("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=:user_id",
+                     {"user_id": fetched_login[0]['user_id']})
         if fetched_login[0]['attempt_count'] >= 3:
-            g.db.execute("UPDATE logins SET account_disabled=1 WHERE user_id=?",
-                         fetched_login[0]['user_id'])
+            g.db.execute("UPDATE logins SET account_disabled=1 WHERE user_id=:user_id",
+                         {"user_id": fetched_login[0]['user_id']})
         return "Wrong Username or Password"
     elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
-        g.db.execute("UPDATE logins SET account_disabled=0, attempt_count=0 WHERE user_id=?",
-                     fetched_login[0]['user_id'])
+        g.db.execute("UPDATE logins SET account_disabled=0, attempt_count=0 WHERE user_id=:user_id",
+                     {"user_id": fetched_login[0]['user_id']})
         session["user_id"] = fetched_login[0]['id']
         session["logged_in"] = True
 
@@ -65,16 +67,16 @@ def register(user, email, password, agree):
     elif check_password_strength(password) != 'strong':
         return "Password not strong enough. Please don't change the code in the developer console."
     elif g.db.execute(
-            "SELECT username FROM users WHERE username=?", user):
+            "SELECT username FROM users WHERE username=:user", {"user": user}):
         return "Username already taken"
     elif g.db.execute(
-            "SELECT email FROM users WHERE email=?", email):
+            "SELECT email FROM users WHERE email=:email", {"email": email}):
         return "Email already registered"
     else:
-        generated_id = g.db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                                    user, email, generate_password_hash(password))
+        generated_id = g.db.execute("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)",
+                                    {"username": user, "email": email, "password": generate_password_hash(password)})
         g.db.execute(
-            "INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (?, 0, CURRENT_TIMESTAMP, 0)", generated_id)
+            "INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (:generated_id, 0, CURRENT_TIMESTAMP, 0)", {"generated_id": generated_id})
         return "Register success"
 
 
