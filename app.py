@@ -10,14 +10,21 @@ import os
 
 
 app = Flask(__name__)
+<<<<<<< HEAD
 app.secret_key = os.environ.get('CSRF_SECRET_KEY')
+=======
+app.config["SECRET_KEY"] = "f63a8b5b8af1e63a5302d3eaf1166eff057dce63"
+>>>>>>> main
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
+<<<<<<< HEAD
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
+=======
+>>>>>>> main
 
 Session(app)
 csrf = CSRFProtect(app)
