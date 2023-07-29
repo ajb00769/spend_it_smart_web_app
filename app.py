@@ -1,20 +1,13 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
+from flask import render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta, date, datetime
 from form_validation import validate_form_inputs
 from spend_it_smart_classes import CategorySums
-import login_utils
+from login_utils import app, login_required, check_password, register, get_current_user, get_user_transactions, add_transaction
 
 
-app = login_utils.app
-app.config["SECRET_KEY"] = "f63a8b5b8af1e63a5302d3eaf1166eff057dce63"
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
-app.config["SESSION_REFRESH_EACH_REQUEST"] = True
-app.config["SESSION_COOKIE_SECURE"] = True
-app.config['PREFERRED_URL_SCHEME'] = 'https'
+app.config.from_pyfile("config.py")
 
 Session(app)
 csrf = CSRFProtect(app)
@@ -26,6 +19,11 @@ def make_session_permanent():
     session.permanent = True
     if request.form.get("remember-me") == "yes-remember":
         app.permanent_session_lifetime = timedelta(days=30)
+
+
+@app.before_request
+def renew_session():
+    session.modified = True
 
 
 @app.after_request
@@ -61,7 +59,7 @@ def login():
             email = request.form.get("em")
             password = request.form.get("pw")
 
-            error_msg = login_utils.check_password(email, password)
+            error_msg = check_password(email, password)
 
             if error_msg:
                 flash((error_msg, 'error'))
@@ -72,7 +70,7 @@ def login():
             password = request.form.get("pw-reg")
             agree_tcs = request.form.get("agree-tcs")
 
-            reg_error = login_utils.register(user, email, password, agree_tcs)
+            reg_error = register(user, email, password, agree_tcs)
 
             if reg_error == "Register success":
                 flash((reg_error, 'success'))
@@ -84,19 +82,19 @@ def login():
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
-@login_utils.login_required
+@login_required
 def dashboard():
     current_session_userid = session.get("user_id")
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
-        get_user = login_utils.get_current_user(current_session_userid)
+        get_user = get_current_user(current_session_userid)
         current_user = get_user[0]['username']
         formatted_date = date.today().strftime("%B %d, %Y")
 
         # fetch all user transactions since account creation, do not include user_id for security (sensitive data)
 
-        fetch_user_transactions = login_utils.get_user_transactions(
+        fetch_user_transactions = get_user_transactions(
             current_session_userid)
 
         # create object instance for current month
@@ -183,7 +181,7 @@ def dashboard():
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
-            login_utils.add_transaction(active_user, subcat, category, amount)
+            add_transaction(active_user, subcat, category, amount)
             data = {'success': True}
             return jsonify(data)
         else:

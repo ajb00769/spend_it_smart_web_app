@@ -1,12 +1,12 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, session, redirect, g
-import re
+from re import match
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart'
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart"
 
 db = SQLAlchemy(app)
 
@@ -82,7 +82,7 @@ def register(user, email, password, agree):
 
 
 def check_password_strength(password):
-    if re.match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{12,}$', password):
+    if match(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{12,}$', password):
         return 'strong'
     else:
         return 'weak'
