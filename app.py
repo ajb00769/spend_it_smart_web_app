@@ -1,36 +1,24 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify, g
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
-from cs50 import SQL
 from datetime import timedelta, date, datetime
-from login_utils import check_password, register, login_required
+from login_utils import check_password, register, login_required, get_current_user, get_user_transactions, add_transaction
 from form_validation import validate_form_inputs
 from spend_it_smart_classes import CategorySums
-import os
 
 
 app = Flask(__name__)
-<<<<<<< HEAD
-app.secret_key = os.environ.get('CSRF_SECRET_KEY')
-=======
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart'
 app.config["SECRET_KEY"] = "f63a8b5b8af1e63a5302d3eaf1166eff057dce63"
->>>>>>> main
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = True
 app.config["SESSION_COOKIE_SECURE"] = True
-<<<<<<< HEAD
 app.config['PREFERRED_URL_SCHEME'] = 'https'
-
-=======
->>>>>>> main
-
 Session(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
-
-db = SQL("sqlite:///database.db")
 
 
 @app.before_request
@@ -102,15 +90,13 @@ def dashboard():
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
-        get_user = db.execute(
-            "SELECT username FROM users WHERE id=?", current_session_userid)
+        get_user = get_current_user(current_session_userid)
         current_user = get_user[0]['username']
         formatted_date = date.today().strftime("%B %d, %Y")
 
         # fetch all user transactions since account creation, do not include user_id for security (sensitive data)
 
-        fetch_user_transactions = db.execute(
-            "SELECT transaction_id, account_title, category, amount, transaction_date FROM transactions WHERE user_id=?", current_session_userid)
+        fetch_user_transactions = get_user_transactions(current_session_userid)
 
         # create object instance for current month
 
@@ -205,8 +191,7 @@ def dashboard():
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
-            db.execute(
-                "INSERT INTO transactions (user_id, account_title, category, amount) VALUES (?, ?, ?, ?)", active_user, subcat, category, amount)
+            add_transaction(active_user, subcat, category, amount)
             data = {'success': True}
             return jsonify(data)
         else:

@@ -1,10 +1,22 @@
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import session, redirect
-from cs50 import SQL
+from flask import Flask, session, redirect, g
 import re
 from functools import wraps
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
-db = SQL("sqlite:///database.db")
+app = Flask(__name__)
+db = SQLAlchemy(app)
+
+
+@app.before_request
+def before_request():
+    g.db = db.session
+
+
+@app.teardown_request
+def teardown_request(exception=None):
+    db.session.remove()
 
 
 def login_required(f):
@@ -20,8 +32,10 @@ def check_password(email, password):
     if not email or not password:
         return "All fields must be filled"
 
-    fetch_login_from_db = db.execute(
-        "SELECT * FROM users JOIN logins ON users.id=logins.user_id WHERE email=?", email)
+    query_fetch_login_from_db = text(
+        "SELECT * FROM users JOIN logins ON users.id=logins.user_id WHERE email=:email")
+    fetch_login_from_db = g.db.execute(
+        query_fetch_login_from_db, {"email": email})
 
     fetched_login = list(fetch_login_from_db)
 
@@ -30,15 +44,15 @@ def check_password(email, password):
     elif fetched_login[0]['account_disabled'] == 1:
         return "Account Disabled - Too Many Failed Login Attempts"
     elif check_password_hash(fetched_login[0]['password'], password) == False:
-        db.execute("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=?",
-                   fetched_login[0]['user_id'])
+        g.db.execute("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=?",
+                     fetched_login[0]['user_id'])
         if fetched_login[0]['attempt_count'] >= 3:
-            db.execute("UPDATE logins SET account_disabled=1 WHERE user_id=?",
-                       fetched_login[0]['user_id'])
+            g.db.execute("UPDATE logins SET account_disabled=1 WHERE user_id=?",
+                         fetched_login[0]['user_id'])
         return "Wrong Username or Password"
     elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
-        db.execute("UPDATE logins SET account_disabled=0, attempt_count=0 WHERE user_id=?",
-                   fetched_login[0]['user_id'])
+        g.db.execute("UPDATE logins SET account_disabled=0, attempt_count=0 WHERE user_id=?",
+                     fetched_login[0]['user_id'])
         session["user_id"] = fetched_login[0]['id']
         session["logged_in"] = True
 
@@ -50,16 +64,17 @@ def register(user, email, password, agree):
         return "You must agree to the T&C's to register"
     elif check_password_strength(password) != 'strong':
         return "Password not strong enough. Please don't change the code in the developer console."
-    elif db.execute(
+    elif g.db.execute(
             "SELECT username FROM users WHERE username=?", user):
         return "Username already taken"
-    elif db.execute(
+    elif g.db.execute(
             "SELECT email FROM users WHERE email=?", email):
         return "Email already registered"
     else:
-        generated_id = db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                                  user, email, generate_password_hash(password))
-        db.execute("INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (?, 0, CURRENT_TIMESTAMP, 0)", generated_id)
+        generated_id = g.db.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                                    user, email, generate_password_hash(password))
+        g.db.execute(
+            "INSERT INTO logins (user_id, attempt_count, last_attempt, account_disabled) VALUES (?, 0, CURRENT_TIMESTAMP, 0)", generated_id)
         return "Register success"
 
 
@@ -68,3 +83,21 @@ def check_password_strength(password):
         return 'strong'
     else:
         return 'weak'
+
+
+def get_current_user(id):
+    query = text(
+        "SELECT username FROM users WHERE id=:current_session_user_id")
+    return g.db.execute(query, {"current_session_user_id": id})
+
+
+def get_user_transactions(id):
+    query = text("SELECT transaction_id, account_title, category, amount, transaction_date FROM transactions WHERE user_id=:current_session_user_id")
+    return g.db.execute(query, {"current_session_user_id": id})
+
+
+def add_transaction(user_id, subcat, category, amount):
+    query = text(
+        "INSERT INTO transactions (user_id, account_title, category, amount) VALUES (:user_id, :subcat, :category, :amount)")
+    g.db.execute(query, {"user_id": user_id, "subcat": subcat,
+                 "category": category, "amount": amount})
