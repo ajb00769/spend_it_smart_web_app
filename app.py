@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
-from flask_session import Session
+from flask_session import Session as Flask_Session
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta, date, datetime
 from form_validation import validate_form_inputs
@@ -12,7 +12,7 @@ csrf = CSRFProtect(app)
 csrf.init_app(app)
 
 
-class SessionModel(db.Model):
+class Session(db.Model):
     __tablename__ = "sessions"
     id = db.Column(db.String(255), primary_key=True)
     data = db.Column(db.LargeBinary)
@@ -20,9 +20,6 @@ class SessionModel(db.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-
-Session(app)
 
 
 with app.app_context():
