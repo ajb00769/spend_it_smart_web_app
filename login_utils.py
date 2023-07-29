@@ -40,11 +40,12 @@ def check_password(email, password):
         query_fetch_login_from_db, {"email": email})
 
     fetched_login = fetch_login_from_db.first()
+    print(fetched_login)
 
     if fetched_login is None:
         return "Wrong Username or Password"
     elif fetched_login is not None:
-        if fetched_login[0]['account_disabled'] == True:
+        if fetched_login['account_disabled'] == True:
             return "Account Disabled - Too Many Failed Login Attempts"
         elif check_password_hash(fetched_login[0]['password'], password) == False:
             update_failed_login_attempt = text("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=:user_id")
