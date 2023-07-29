@@ -4,14 +4,26 @@ from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta, date, datetime
 from form_validation import validate_form_inputs
 from spend_it_smart_classes import CategorySums
-from login_utils import app, login_required, check_password, register, get_current_user, get_user_transactions, add_transaction
+from login_utils import app, db, login_required, check_password, register, get_current_user, get_user_transactions, add_transaction
 
 
 app.config.from_pyfile("config.py")
-
-Session(app)
 csrf = CSRFProtect(app)
 csrf.init_app(app)
+
+
+class Session(db.Model):
+    __tablename__ = "sessions"
+    id = db.Column(db.String(255), primary_key=True)
+    data = db.Column(db.LargeBinary)
+    expiry = db.Column(db.DateTime)
+
+
+with app.app_context():
+    db.create_all()
+
+
+Session(app)
 
 
 @app.before_request
