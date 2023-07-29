@@ -1,13 +1,13 @@
-from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify, g
+from flask import Flask, render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta, date, datetime
-from login_utils import check_password, register, login_required, get_current_user, get_user_transactions, add_transaction
 from form_validation import validate_form_inputs
 from spend_it_smart_classes import CategorySums
+import login_utils
 
 
-app = Flask(__name__)
+app = login_utils.app
 app.config["SECRET_KEY"] = "f63a8b5b8af1e63a5302d3eaf1166eff057dce63"
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -61,7 +61,7 @@ def login():
             email = request.form.get("em")
             password = request.form.get("pw")
 
-            error_msg = check_password(email, password)
+            error_msg = login_utils.check_password(email, password)
 
             if error_msg:
                 flash((error_msg, 'error'))
@@ -72,7 +72,7 @@ def login():
             password = request.form.get("pw-reg")
             agree_tcs = request.form.get("agree-tcs")
 
-            reg_error = register(user, email, password, agree_tcs)
+            reg_error = login_utils.register(user, email, password, agree_tcs)
 
             if reg_error == "Register success":
                 flash((reg_error, 'success'))
@@ -84,19 +84,20 @@ def login():
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
-@login_required
+@login_utils.login_required
 def dashboard():
     current_session_userid = session.get("user_id")
     if request.method == "GET" and not session.get('logged_in'):
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
-        get_user = get_current_user(current_session_userid)
+        get_user = login_utils.get_current_user(current_session_userid)
         current_user = get_user[0]['username']
         formatted_date = date.today().strftime("%B %d, %Y")
 
         # fetch all user transactions since account creation, do not include user_id for security (sensitive data)
 
-        fetch_user_transactions = get_user_transactions(current_session_userid)
+        fetch_user_transactions = login_utils.get_user_transactions(
+            current_session_userid)
 
         # create object instance for current month
 
@@ -107,8 +108,8 @@ def dashboard():
         current_month_transacts = []
 
         for transaction in fetch_user_transactions:
-            date_str = transaction['transaction_date']
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            date_str = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             if date_obj.month == datetime.now().month:
                 current_month_transacts.append(transaction)
 
@@ -134,8 +135,8 @@ def dashboard():
         relevant_transactions = ['purchase', 'income', 'sell']
 
         for transaction in fetch_user_transactions:
-            date_str = transaction['transaction_date']
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+            date_str = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             if date_obj.year == datetime.now().year and transaction['category'] in relevant_transactions:
                 current_year_transacts.append(transaction)
 
@@ -146,7 +147,7 @@ def dashboard():
 
         for transaction in sorted_transactions:
             transaction_date = datetime.strptime(
-                transaction['transaction_date'], '%Y-%m-%d %H:%M:%S')
+                transaction['transaction_date'].strftime('%Y-%m-%d'), '%Y-%m-%d')
             month = transaction_date.strftime('%B')
             monthly_transactions.setdefault(month, []).append(transaction)
 
@@ -169,18 +170,9 @@ def dashboard():
 
         breakdown_headers = ['transaction_date', 'account_title', 'amount']
 
-        breakdown_transacts = []
-
         for transaction in current_year_transacts:
-            if transaction['account_title'] == 'businesssvc':
-                transaction['account_title'] = 'Service Income'
-            else:
-                transaction['account_title'] = transaction['account_title'].title()
-            date_string = transaction['transaction_date']
-            date_obj = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
-            transaction['transaction_date'] = date_obj.strftime('%m/%d/%Y')
-            transaction['amount'] = "{:,.2f}".format(transaction['amount'])
-            breakdown_transacts.append(transaction)
+            date_string = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_obj = datetime.strptime(date_string, '%Y-%m-%d')
 
         return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=current_month_labels, values=current_month_values, categories=current_month_labels, months=list(totals.keys()), income=bar_chart_income, sell=bar_chart_sell, expense=bar_chart_purchases, table_headers=breakdown_headers, transact_data=current_year_transacts)
 
@@ -191,7 +183,7 @@ def dashboard():
         active_user = session.get("user_id")
 
         if validate_form_inputs(category, subcat, amount):
-            add_transaction(active_user, subcat, category, amount)
+            login_utils.add_transaction(active_user, subcat, category, amount)
             data = {'success': True}
             return jsonify(data)
         else:

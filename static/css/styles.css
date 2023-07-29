@@ -80,6 +80,10 @@ body {
     padding-bottom: 5px;
 }
 
-option {
+.custom-select {
+    font-family: 'Questrial', sans-serif;
+}
+
+.options li {
     font-family: 'Questrial', sans-serif;
 }
