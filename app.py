@@ -18,12 +18,12 @@ class Session(db.Model):
     data = db.Column(db.LargeBinary)
     expiry = db.Column(db.DateTime)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
 with app.app_context():
     db.create_all()
-
-
-Session(app)
 
 
 @app.before_request
