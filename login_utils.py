@@ -44,24 +44,24 @@ def check_password(email, password):
     if fetched_login is None:
         return "Wrong Username or Password"
     elif fetched_login is not None:
-        if fetched_login['account_disabled'] == True:
+        if fetched_login[0]['account_disabled'] == True:
             return "Account Disabled - Too Many Failed Login Attempts"
-        elif check_password_hash(fetched_login['password'], password) == False:
+        elif check_password_hash(fetched_login[0]['password'], password) == False:
             update_failed_login_attempt = text("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=:user_id")
             g.db.execute(update_failed_login_attempt,
-                        {"user_id": fetched_login['user_id']})
+                        {"user_id": fetched_login[0]['user_id']})
             g.db.commit()
-            if fetched_login['attempt_count'] >= 3:
+            if fetched_login[0]['attempt_count'] >= 3:
                 disable_account = text("UPDATE logins SET account_disabled=True WHERE user_id=:user_id")
                 g.db.execute(disable_account,
-                            {"user_id": fetched_login['user_id']})
+                            {"user_id": fetched_login[0]['user_id']})
                 g.db.commit()
             return "Wrong Username or Password"
-        elif email == fetched_login['email'] and check_password_hash(fetched_login['password'], password):
+        elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
             reset_attempts_upon_success = text("UPDATE logins SET account_disabled=False, attempt_count=0 WHERE user_id=:user_id")
             g.db.execute(reset_attempts_upon_success,
-                        {"user_id": fetched_login['user_id']})
-            session["user_id"] = fetched_login['id']
+                        {"user_id": fetched_login[0]['user_id']})
+            session["user_id"] = fetched_login[0]['user_id']
             session["logged_in"] = True
             g.db.commit()
 
