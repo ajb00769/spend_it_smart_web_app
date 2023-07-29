@@ -39,26 +39,26 @@ def check_password(email, password):
     fetch_login_from_db = g.db.execute(
         query_fetch_login_from_db, {"email": email})
 
-    fetched_login = list(fetch_login_from_db)
+    fetched_login = fetch_login_from_db.fetchone()
 
-    if not fetched_login:
+    if fetched_login is None:
         return "Wrong Username or Password"
-    elif fetched_login[0]['account_disabled'] == True:
+    elif fetched_login['account_disabled'] == True:
         return "Account Disabled - Too Many Failed Login Attempts"
-    elif check_password_hash(fetched_login[0]['password'], password) == False:
+    elif check_password_hash(fetched_login['password'], password) == False:
         update_failed_login_attempt = text("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=:user_id")
         g.db.execute(update_failed_login_attempt,
-                     {"user_id": fetched_login[0]['user_id']})
-        if fetched_login[0]['attempt_count'] >= 3:
+                     {"user_id": fetched_login['user_id']})
+        if fetched_login['attempt_count'] >= 3:
             disable_account = text("UPDATE logins SET account_disabled=True WHERE user_id=:user_id")
             g.db.execute(disable_account,
-                         {"user_id": fetched_login[0]['user_id']})
+                         {"user_id": fetched_login['user_id']})
         return "Wrong Username or Password"
-    elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
+    elif email == fetched_login['email'] and check_password_hash(fetched_login['password'], password):
         reset_attempts_upon_success = text("UPDATE logins SET account_disabled=False, attempt_count=0 WHERE user_id=:user_id")
         g.db.execute(reset_attempts_upon_success,
-                     {"user_id": fetched_login[0]['user_id']})
-        session["user_id"] = fetched_login[0]['id']
+                     {"user_id": fetched_login['user_id']})
+        session["user_id"] = fetched_login['id']
         session["logged_in"] = True
 
 
