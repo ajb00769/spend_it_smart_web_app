@@ -1,7 +1,7 @@
 SECRET_KEY = "f63a8b5b8af1e63a5302d3eaf1166eff057dce63"
 TEMPLATES_AUTO_RELOAD = True
 SESSION_TYPE = "sqlalchemy"
-SESSION_SQLALCHEMY = "postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart"
+SESSION_SQLALCHEMY = "postgresql://ajb00769:UA0PYmWwql7j@ep-weathered-wind-38338075.us-east-2.aws.neon.tech/neondb"
 SESSION_SQLALCHEMY_TABLE = "sessions"
 PERMANENT_SESSION_LIFETIME = 1800
 SESSION_REFRESH_EACH_REQUEST = True

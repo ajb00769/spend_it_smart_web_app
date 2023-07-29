@@ -1,5 +1,4 @@
 from flask import render_template, redirect, url_for, request, session, send_from_directory, flash, jsonify
-from flask_session import Session as Flask_Session
 from flask_wtf.csrf import CSRFProtect
 from datetime import timedelta, date, datetime
 from form_validation import validate_form_inputs
