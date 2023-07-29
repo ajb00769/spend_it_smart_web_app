@@ -39,7 +39,7 @@ def check_password(email, password):
     fetch_login_from_db = g.db.execute(
         query_fetch_login_from_db, {"email": email})
 
-    fetched_login = fetch_login_from_db.fetchone(keyed=True)
+    fetched_login = fetch_login_from_db.first()
 
     if fetched_login is None:
         return "Wrong Username or Password"
