@@ -40,29 +40,28 @@ def check_password(email, password):
         query_fetch_login_from_db, {"email": email})
 
     fetched_login = fetch_login_from_db.first()
-    print(fetched_login)
 
     if fetched_login is None:
         return "Wrong Username or Password"
     elif fetched_login is not None:
-        if fetched_login['account_disabled'] == True:
+        if fetched_login[10] == True:
             return "Account Disabled - Too Many Failed Login Attempts"
-        elif check_password_hash(fetched_login[0]['password'], password) == False:
+        elif check_password_hash(fetched_login[3], password) == False:
             update_failed_login_attempt = text("UPDATE logins SET attempt_count=attempt_count+1 WHERE user_id=:user_id")
             g.db.execute(update_failed_login_attempt,
-                        {"user_id": fetched_login[0]['user_id']})
+                        {"user_id": fetched_login[7]})
             g.db.commit()
-            if fetched_login[0]['attempt_count'] >= 3:
+            if fetched_login[8] >= 3:
                 disable_account = text("UPDATE logins SET account_disabled=True WHERE user_id=:user_id")
                 g.db.execute(disable_account,
-                            {"user_id": fetched_login[0]['user_id']})
+                            {"user_id": fetched_login[7]})
                 g.db.commit()
             return "Wrong Username or Password"
-        elif email == fetched_login[0]['email'] and check_password_hash(fetched_login[0]['password'], password):
+        elif email == fetched_login[2] and check_password_hash(fetched_login[3], password):
             reset_attempts_upon_success = text("UPDATE logins SET account_disabled=False, attempt_count=0 WHERE user_id=:user_id")
             g.db.execute(reset_attempts_upon_success,
-                        {"user_id": fetched_login[0]['user_id']})
-            session["user_id"] = fetched_login[0]['user_id']
+                        {"user_id": fetched_login[7]})
+            session["user_id"] = fetched_login[0]
             session["logged_in"] = True
             g.db.commit()
 
@@ -113,3 +112,16 @@ def add_transaction(user_id, subcat, category, amount):
     g.db.execute(query, {"user_id": user_id, "subcat": subcat,
                  "category": category, "amount": amount})
     g.db.commit()
+
+# fetched_login legend
+# 0 = id
+# 1 = username
+# 2 = email
+# 3 = password
+# 4 = verifie status
+# 5 = account type
+# 6 = date registered
+# 7 = user_id
+# 8 = attempt count
+# 9 = last attempt
+# 10 = account disabled
