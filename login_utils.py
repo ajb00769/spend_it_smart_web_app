@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://ajb00769:UA0PYmWwql7j@ep-weathered-wind-38338075.us-east-2.aws.neon.tech/neondb"
 
 db = SQLAlchemy(app)
 
