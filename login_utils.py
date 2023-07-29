@@ -73,7 +73,7 @@ def register(user, email, password, agree):
             text("SELECT username FROM users WHERE username=:user"), {"user": user}).first() is not None:
         return "Username already taken"
     elif g.db.execute(
-            text("SELECT email FROM users WHERE email=:email", {"email": email})).first() is not None:
+            text("SELECT email FROM users WHERE email=:email"), {"email": email}).first() is not None:
         return "Email already registered"
     else:
         generated_id = g.db.execute(text("INSERT INTO users (username, email, password) VALUES (:username, :email, :password) RETURNING id"),
