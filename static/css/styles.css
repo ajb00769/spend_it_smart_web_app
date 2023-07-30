@@ -60,12 +60,12 @@ body {
 
 .chart-container {
     display: flex;
-    width: 500px;
+    max-width: 500px;
 }
 
 #doughnut-chart, #my-bar-chart {
     display: flex;
-    width: 500px;
+    width: 100%;
 }
 
 .font20 {
