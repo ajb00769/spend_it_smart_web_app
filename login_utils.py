@@ -98,7 +98,7 @@ def check_password_strength(password):
 def get_current_user(id):
     query = text(
         "SELECT username FROM users WHERE id=:current_session_user_id")
-    return g.db.execute(query, {"current_session_user_id": id}).fetchall()
+    return g.db.execute(query, {"current_session_user_id": id}).first()
 
 
 def get_user_transactions(id):

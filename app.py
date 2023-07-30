@@ -100,13 +100,14 @@ def dashboard():
         return redirect(url_for("login"))
     elif request.method == "GET" and session.get('logged_in'):
         get_user = get_current_user(current_session_userid)
-        current_user = get_user[0]['username']
+        current_user = get_user[0]
         formatted_date = date.today().strftime("%B %d, %Y")
 
         # fetch all user transactions since account creation, do not include user_id for security (sensitive data)
 
         fetch_user_transactions = get_user_transactions(
             current_session_userid)
+        print(fetch_user_transactions)
 
         # create object instance for current month
 
