@@ -18,7 +18,18 @@
       crossorigin="anonymous"
     />
   </head>
-  <body>
+  <body class="d-flex justify-content-center align-content-center">
+    <div class="container d-flex position-absolute mt-3">
+      <div class="text-danger fw-bolder text-center">
+        We are currenly in ALPHA TESTING.
+        <p>
+          If you find any bugs, issues, or have any suggestions
+          <span
+            ><a href="mailto:allenbercero@gmail.com">send us an email</a></span
+          >.
+        </p>
+      </div>
+    </div>
     <div class="container d-flex flex-column flex-md-row">
       <div class="logo-container">
         <img
@@ -182,27 +193,31 @@
         </div>
       </div>
     </div>
-    <footer>
-      <div class="footer-div">
-        <div>
-          &copy; 2023
-          <a href="mailto:allenbercero@gmail.com">L & A Software Inc.</a>
-          &#8226; All Rights Reserved
-          <br />
-          <a
-            href="{{ url_for('serve_pdf', filename='spenditsmart_privacy_policy.pdf') }}"
-            target="_blank"
-            >Privacy Policy</a
-          >
-          &#8226;
-          <a
-            href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
-            target="_blank"
-            >Terms & Conditions</a
-          >
+    <div class="footer-div">
+      <footer class="align-content-center pt-5">
+        <div
+          class="d-flex justify-content-center align-content-center mb-3 text-center"
+        >
+          <div class="footer-text">
+            &copy; 2023
+            <a href="#">L & A Software Inc.</a>
+            &#8226; All Rights Reserved
+            <br />
+            <a
+              href="{{ url_for('serve_pdf', filename='spenditsmart_privacy_policy.pdf') }}"
+              target="_blank"
+              >Privacy Policy</a
+            >
+            &#8226;
+            <a
+              href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
+              target="_blank"
+              >Terms & Conditions</a
+            >
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
     <script
       type="module"
       src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"

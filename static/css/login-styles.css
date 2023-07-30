@@ -8,15 +8,8 @@
 }
 
 body {
-    background-size: cover;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-position: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    min-height: 900px;
+    min-width: 400px;
 }
 
 body > h1 {
@@ -195,20 +188,22 @@ body > h1 {
     text-decoration: underline;
 }
 
-.footer-div {
-    display: table;
+.footer-text {
     font-size: 12px;
-    color: grey;
-    margin-top: 10%;
-    text-align: center;
+    color: gray;
 }
 
-.footer-div a {
-    color: grey;
+.footer-text a {
+    color: gray;
     text-decoration: none;
 }
 
-.footer-div a:hover {
+.footer-div {
+    margin-top: 850px;
+    position: fixed;
+}
+
+.footer-text a:hover {
     text-decoration: underline;
 }
 

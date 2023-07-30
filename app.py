@@ -215,3 +215,10 @@ if __name__ == '__main__':
 # email: test@test.com
 # pw: &%H7wuScgiq?
 # https://spend-it-smart-web-app.vercel.app/login
+
+# current_month_transacts legend
+# 0 = transaction id
+# 1 = account_title
+# 2 = category
+# 3 = amount
+# 4 = transact date
