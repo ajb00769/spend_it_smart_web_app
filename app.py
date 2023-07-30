@@ -107,7 +107,6 @@ def dashboard():
 
         fetch_user_transactions = get_user_transactions(
             current_session_userid)
-        print(fetch_user_transactions)
 
         # create object instance for current month
 
@@ -118,7 +117,7 @@ def dashboard():
         current_month_transacts = []
 
         for transaction in fetch_user_transactions:
-            date_str = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_str = transaction[4].strftime('%Y-%m-%d')
             date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             if date_obj.month == datetime.now().month:
                 current_month_transacts.append(transaction)
@@ -126,8 +125,8 @@ def dashboard():
         # iteratively sort per category for the current MONTH
 
         for transaction in current_month_transacts:
-            category = transaction['category']
-            amount = transaction['amount']
+            category = transaction[2]
+            amount = transaction[3]
             current_month_sums.increment(category, amount)
 
         # filter transactions for current YEAR
@@ -145,19 +144,19 @@ def dashboard():
         relevant_transactions = ['purchase', 'income', 'sell']
 
         for transaction in fetch_user_transactions:
-            date_str = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_str = transaction[4].strftime('%Y-%m-%d')
             date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-            if date_obj.year == datetime.now().year and transaction['category'] in relevant_transactions:
+            if date_obj.year == datetime.now().year and transaction[2] in relevant_transactions:
                 current_year_transacts.append(transaction)
 
         sorted_transactions = sorted(
-            current_year_transacts, key=lambda x: x['transaction_date'])
+            current_year_transacts, key=lambda x: x[4])
 
         monthly_transactions = {}
 
         for transaction in sorted_transactions:
             transaction_date = datetime.strptime(
-                transaction['transaction_date'].strftime('%Y-%m-%d'), '%Y-%m-%d')
+                transaction[4].strftime('%Y-%m-%d'), '%Y-%m-%d')
             month = transaction_date.strftime('%B')
             monthly_transactions.setdefault(month, []).append(transaction)
 
@@ -168,8 +167,8 @@ def dashboard():
             for category in relevant_transactions:
                 total_amount = 0
                 for transaction in transactions:
-                    if transaction['category'] == category:
-                        total_amount += transaction['amount']
+                    if transaction[2] == category:
+                        total_amount += transaction[3]
                 totals[month][category] = total_amount
 
         totals_values = list(totals.values())
@@ -181,7 +180,7 @@ def dashboard():
         breakdown_headers = ['transaction_date', 'account_title', 'amount']
 
         for transaction in current_year_transacts:
-            date_string = transaction['transaction_date'].strftime('%Y-%m-%d')
+            date_string = transaction[4].strftime('%Y-%m-%d')
             date_obj = datetime.strptime(date_string, '%Y-%m-%d')
 
         return render_template("dashboard.jinja-html", username=current_user, date=formatted_date, labels=current_month_labels, values=current_month_values, categories=current_month_labels, months=list(totals.keys()), income=bar_chart_income, sell=bar_chart_sell, expense=bar_chart_purchases, table_headers=breakdown_headers, transact_data=current_year_transacts)
