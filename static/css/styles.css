@@ -59,7 +59,13 @@ body {
 }
 
 .chart-container {
+    display: flex;
     max-width: 500px;
+    min-width: 400px;
+}
+
+#doughnut-chart, #my-bar-chart {
+    display: flex;
 }
 
 .font20 {
