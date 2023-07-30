@@ -120,7 +120,7 @@
                         {% if key == 'amount' %}
                         <td class="align-right">{{ items[key] }}</td>
                         {% elif key == 'transaction_date' %}
-                        <td class="text-center">{{ items[key].strftime('%Y-%m-%d') }}</td>
+                        <td class="text-center">{{ items[key].strftime('%b-%d-%Y') }}</td>
                         {% else %}
                         <td>{{ items[key] }}</td>
                         {% endif %}
