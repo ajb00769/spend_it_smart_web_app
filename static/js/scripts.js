@@ -45,35 +45,59 @@ registerPassword.addEventListener('input', function() {
 });
 
 function checkPasswordStrength(password) {
-    const passwordRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{12,}$/;
+    const passwordRegExpUpper = /^(?=.*[A-Z])/;
+    const passwordRegExpLower = /^(?=.*[a-z])/;
+    const passwordRegExpDigit = /^(?=.*\d)/;
+    const passwordRegExpSpecial = /^(?=.*[@$!%*#?&])/;
 
-    if (password.length < 8) {
+    if (!passwordRegExpLower.test(password)) {
         registerButton.disabled = true;
-        return 'Weak';
-    } else if (!passwordRegExp.test(password)) {
+        registerButton.hidden = true;
+        return 'No Lower';
+    } else if (!passwordRegExpUpper.test(password)) {
         registerButton.disabled = true;
-        return 'Medium';
+        registerButton.hidden = true;
+        return 'No Upper';
+    } else if (!passwordRegExpDigit.test(password)) {
+        registerButton.disabled = true;
+        registerButton.hidden = true;
+        return 'No Digit';
+    } else if (!passwordRegExpSpecial.test(password)) {
+        registerButton.disabled = true;
+        registerButton.hidden = true;
+        return 'No Special';
+    } else if (password.length < 12) {
+        registerButton.disabled = true;
+        registerButton.hidden = true;
+        return 'Less than 12 characters';
     } else {
         registerButton.disabled = false;
+        registerButton.hidden = false;
         return 'Strong';
     }
 }  
 
 function getStrengthText(strength) {
-    if (strength === 'Weak') {
-        return 'Weak password.\nMust be at least 12 characters long and contain 1 digit, 1 uppercase, 1 lowercase, and 1 special character [@$!%*#?&]';
-    } else if (strength === 'Medium') {
-        return 'Medium password.\nMust be at least 12 characters long and contain 1 digit, 1 uppercase, 1 lowercase, and 1 special character [@$!%*#?&]';
+    if (strength === 'No Lower') {
+        return "Password must contain a lowercase letter.";
+    } else if (strength === 'No Upper') {
+        return "Password must contain an uppercase letter.";
+    } else if (strength === 'No Special') {
+        return "Password must contain any of the following special characters: @$!%*#?&";
+    } else if (strength === 'No Digit') {
+        return "Password must contain a digit";
+    } else if (strength === 'Less than 12 characters') {
+        return "Password is less than 12 characters long.";
     } else {
-        return 'Strong password. Good job! :)';
-}
+        return "Strong password. Good Job! :)"
+    }
 }
   
 function getStrengthClass(strength) {
-    if (strength === 'Weak') {
+    if (strength === 'No Upper' || strength === 'No Lower' || strength === 'No Digit' || strength === 'No Special') {
         return 'text-danger';
-    } else if (strength === 'Medium') {
-        return 'text-warning';
+    } else if (strength === 'Less than 12 characters') {
+        return 'text-danger';
     } else {
         return 'text-success';
     }
