@@ -6,7 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://ajb00769:UA0PYmWwql7j@ep-weathered-wind-38338075.us-east-2.aws.neon.tech/neondb"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://ajb00769:UA0PYmWwql7j@ep-weathered-wind-38338075.us-east-2.aws.neon.tech/neondb"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:allentestdb123@127.0.0.1:5432/spend_it_smart"
 
 db = SQLAlchemy(app)
 
@@ -64,6 +65,7 @@ def check_password(email, password):
             session["user_id"] = fetched_login[0]
             session["logged_in"] = True
             g.db.commit()
+            return "Login success"
 
 
 def register(user, email, password, agree):

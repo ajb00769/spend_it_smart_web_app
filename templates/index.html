@@ -40,6 +40,7 @@
       </div>
       <div class="wrapper">
         <div class="form-box login">
+          <h2>Login</h2>
           {% with messages = get_flashed_messages() %} {% if messages %} {% for
           message in messages %} {% set message_text, message_type = message %}
           <div
@@ -48,11 +49,12 @@
             {{ message_text }}
           </div>
           {% endfor %} {% endif %} {% endwith %}
+          <div id="login-error-message"></div>
 
           <!-- login form -->
           <form method="post" id="login-form" action="{{ url_for('login') }}">
             <!-- email input -->
-            <div class="input-box">
+            <div class="input-box-login">
               <span class="icon">
                 <ion-icon name="mail"></ion-icon>
               </span>
@@ -62,11 +64,12 @@
                 autocomplete="off"
                 style="font-weight: 500"
                 placeholder="Email"
+                id="login-email"
               />
             </div>
 
             <!-- password input -->
-            <div class="input-box">
+            <div class="input-box-login">
               <span class="icon">
                 <ion-icon name="lock-closed"></ion-icon>
               </span>
@@ -75,6 +78,7 @@
                 name="pw"
                 style="font-weight: 500"
                 placeholder="Password"
+                id="login-password"
               />
             </div>
             <!-- remember me + forgot password field -->
@@ -98,7 +102,12 @@
             >
               Login
             </button>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input
+              type="hidden"
+              name="csrf_token"
+              id="csrf-token"
+              value="{{ csrf_token() }}"
+            />
             <!-- register an account field -->
             <div class="login-register">
               <p>
@@ -117,7 +126,7 @@
             action="{{ url_for('login') }}"
           >
             <!-- username field -->
-            <div class="input-box">
+            <div class="input-box-register">
               <span class="icon">
                 <ion-icon name="person"></ion-icon>
               </span>
@@ -127,10 +136,11 @@
                 autocomplete="off"
                 style="font-weight: 500"
                 placeholder="Username"
+                class="register-form-field"
               />
             </div>
             <!-- email field -->
-            <div class="input-box">
+            <div class="input-box-register">
               <span class="icon">
                 <ion-icon name="mail"></ion-icon>
               </span>
@@ -140,10 +150,11 @@
                 autocomplete="off"
                 style="font-weight: 500"
                 placeholder="E-mail"
+                class="register-form-field"
               />
             </div>
             <!-- password field -->
-            <div class="input-box">
+            <div class="input-box-register">
               <span class="icon">
                 <ion-icon name="lock-closed"></ion-icon>
               </span>
@@ -153,9 +164,28 @@
                 style="font-weight: 500"
                 id="register-password"
                 placeholder="Password"
+                class="register-form-field"
               />
               <small
                 id="password-help"
+                class="form-text small-line-height"
+              ></small>
+            </div>
+            <!-- confirm password -->
+            <div class="input-box-register">
+              <span class="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </span>
+              <input
+                type="password"
+                name="pw-reg"
+                style="font-weight: 500"
+                id="register-password-confirm"
+                placeholder="Confirm Password"
+                class="register-form-field"
+              />
+              <small
+                id="password-confirm-help"
                 class="form-text small-line-height"
               ></small>
             </div>

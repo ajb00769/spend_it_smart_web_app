@@ -61,35 +61,37 @@ def index():
 def login():
     if request.method == "GET" and session.get('logged_in'):
         return redirect(url_for("dashboard"))
-
+    elif request.method == "GET" and not session.get('logged_in'):
+        return render_template("index.html")
     elif request.method == "POST":
-        login_pressed = request.form.get("loginbutton", None)
-        register_pressed = request.form.get("registerbutton", None)
+        data = request.get_json()
+        error_msg = check_password(data['email'], data['password'])
 
-        if login_pressed == "login":
-            email = request.form.get("em")
-            password = request.form.get("pw")
+        if error_msg != 'Login success':
+            return {'message': error_msg}, 401
+        else:
+            return redirect(url_for("dashboard"))
 
-            error_msg = check_password(email, password)
 
-            if error_msg:
-                flash((error_msg, 'error'))
 
-        elif register_pressed == "register":
-            user = request.form.get("uname-reg")
-            email = request.form.get("email-reg")
-            password = request.form.get("pw-reg")
-            agree_tcs = request.form.get("agree-tcs")
+# @app.route("/register", method=["POST", "GET"])
+# def register():
+#     if request.method == "GET" and session.get('logged_in'):
+#         return redirect(url_for("dashboard"))
+#     elif request.method == "POST":
+#         data = request.get_json()
+#         #     user = request.form.get("uname-reg")
+#         #     email = request.form.get("email-reg")
+#         #     password = request.form.get("pw-reg")
+#         #     agree_tcs = request.form.get("agree-tcs")
 
-            reg_error = register(user, email, password, agree_tcs)
+#         #     reg_error = register(user, email, password, agree_tcs)
 
-            if reg_error == "Register success":
-                flash((reg_error, 'success'))
-            elif reg_error:
-                flash((reg_error, 'error'))
-
-        return redirect(url_for("dashboard"))
-    return render_template("index.html")
+#         #     if reg_error == "Register success":
+#         #         flash((reg_error, 'success'))
+#         #     elif reg_error:
+#         #         flash((reg_error, 'error'))
+#         return redirect(url_for("login"))
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
