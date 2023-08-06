@@ -139,6 +139,44 @@ loginForm.addEventListener('submit', function(event) {
         }
     }).then((data) => {
         const errorMessage = document.getElementById("login-error-message");
+        const loginHeading = document.getElementById("login-form-heading");
+        loginHeading.hidden = true;
+        errorMessage.classList.add("text-center");
+        errorMessage.classList.add("alert");
+        errorMessage.classList.add("alert-danger");
+        errorMessage.textContent = data.message;
+    }).catch((error) => {
+        console.error("Error:", error);
+    })
+})
+
+registerForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const csrfToken = document.getElementById("csrf-token");
+    const agreeToTerms = document.getElementById("agree-tcs");
+    let csrf = csrfToken.value;
+    let username = usernameRegField.value;
+    let email = emailRegField.value;
+    let password = registerPassword.value;
+    let passwordConfirmation = registerPasswordConfirm.value;
+    let agree = agreeToTerms.value;
+
+    fetch("/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrf
+        },
+        body: JSON.stringify({ 'username': username, 'email': email, 'password': password, 'password_confirmation': passwordConfirmation, 'agree': agree })
+    }).then((response) => {
+        console.log(response);
+        if (response.ok) {
+            window.location.href="/";
+        } else {
+            return response.json();
+        }
+    }).then((data) => {
+        const errorMessage = document.getElementById("register-error-message");
         errorMessage.textContent = data.message;
     }).catch((error) => {
         console.error("Error:", error);

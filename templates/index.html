@@ -40,17 +40,8 @@
       </div>
       <div class="wrapper">
         <div class="form-box login">
-          <h2>Login</h2>
-          {% with messages = get_flashed_messages() %} {% if messages %} {% for
-          message in messages %} {% set message_text, message_type = message %}
-          <div
-            class="text-center alert {% if message_type == 'success' %}alert-success{% else %}alert-danger{% endif %}"
-          >
-            {{ message_text }}
-          </div>
-          {% endfor %} {% endif %} {% endwith %}
+          <h2 id="login-form-heading">Login</h2>
           <div id="login-error-message"></div>
-
           <!-- login form -->
           <form method="post" id="login-form" action="{{ url_for('login') }}">
             <!-- email input -->
@@ -125,6 +116,7 @@
             id="register-form"
             action="{{ url_for('login') }}"
           >
+            <div id="register-error-message"></div>
             <!-- username field -->
             <div class="input-box-register">
               <span class="icon">
@@ -133,6 +125,7 @@
               <input
                 type="text"
                 name="uname-reg"
+                id="uname-reg"
                 autocomplete="off"
                 style="font-weight: 500"
                 placeholder="Username"
@@ -147,6 +140,7 @@
               <input
                 type="email"
                 name="email-reg"
+                id="email-reg"
                 autocomplete="off"
                 style="font-weight: 500"
                 placeholder="E-mail"
@@ -193,8 +187,12 @@
             <br />
             <div class="remember-forgot">
               <label>
-                <input type="checkbox" name="agree-tcs" value="agreed" />I agree
-                to Spend It Smart's
+                <input
+                  type="checkbox"
+                  name="agree-tcs"
+                  id="agree-tcs"
+                  value="agreed"
+                />I agree to Spend It Smart's
                 <a
                   href="{{ url_for('serve_pdf', filename='spenditsmart_tncs.pdf') }}"
                   target="_blank"

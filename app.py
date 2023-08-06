@@ -43,7 +43,7 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     response.headers["X-Frame-Options"] = "DENY"
-    # response.headers["Content-Security-Policy"] = "default-src 'self' https://spend-it-smart-web-app.vercel.app";
+    # response.headers["Content-Security-Policy"] = "default-src 'self' https://spenditsmart-webapp.vercel.app";
     return response
 
 
@@ -73,25 +73,17 @@ def login():
             return redirect(url_for("dashboard"))
 
 
+@app.route("/register", methods=["POST"])
+def register_account():
+    if request.method == "POST":
+        data = request.get_json()
+        reg_error = register(
+            data['username'], data['email'], data['password'], data['agree'])
 
-# @app.route("/register", method=["POST", "GET"])
-# def register():
-#     if request.method == "GET" and session.get('logged_in'):
-#         return redirect(url_for("dashboard"))
-#     elif request.method == "POST":
-#         data = request.get_json()
-#         #     user = request.form.get("uname-reg")
-#         #     email = request.form.get("email-reg")
-#         #     password = request.form.get("pw-reg")
-#         #     agree_tcs = request.form.get("agree-tcs")
-
-#         #     reg_error = register(user, email, password, agree_tcs)
-
-#         #     if reg_error == "Register success":
-#         #         flash((reg_error, 'success'))
-#         #     elif reg_error:
-#         #         flash((reg_error, 'error'))
-#         return redirect(url_for("login"))
+        if reg_error == "Register success":
+            return {'message': reg_error}, 200
+        else:
+            return {'message': reg_error}, 401
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
